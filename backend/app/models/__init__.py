@@ -1,2 +1,9 @@
 # Modelos SQLAlchemy por dominio.
-# Exemplo futuro: from app.models.politico import Politico
+from app.models.noticia import (  # noqa: F401
+    ColetaNoticias,
+    Noticia,
+    NoticiaAtualizacao,
+    NoticiaPolitico,
+    PoliticoRef,
+    Veiculo,
+)

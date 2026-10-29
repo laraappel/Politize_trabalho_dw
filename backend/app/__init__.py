@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 
+from app.cli import register_cli
 from app.config import Config
 from app.errors import register_error_handlers
 from app.extensions import db
@@ -15,6 +16,7 @@ def create_app(config_class=Config):
     CORS(app, origins=app.config["FRONTEND_ORIGIN"], supports_credentials=False)
 
     register_blueprints(app)
+    register_cli(app)
     register_error_handlers(app)
 
     return app

@@ -7,6 +7,8 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
     JSON_SORT_KEYS = False
+    # Módulo de notícias: ver docs/NOTICIAS.md
+    ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "")
 
 
 class TestConfig(Config):

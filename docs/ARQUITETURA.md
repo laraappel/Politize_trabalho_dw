@@ -23,7 +23,7 @@ Navegador  -->  backend (Flask) --> PostgreSQL
 - Vite em vez de Create React App, por recarga rápida e suporte simples no Docker.
 - Flask com application factory e blueprints, para cada módulo registrar suas rotas sem editar um único arquivo gigante.
 - SQLAlchemy já configurado, mas sem modelos de domínio nesta etapa.
-- Sem autenticação, scraping de notícias ou integração eleitoral.
+- Sem autenticação ou integração eleitoral. Notícias: apenas fontes com acesso autorizado documentado, sem scraping (ver `docs/NOTICIAS.md`).
 
 ## Contratos da API
 

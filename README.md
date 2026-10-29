@@ -82,3 +82,5 @@ tests/      testes de integração
 ```
 
 Leia `docs/CONVENCOES.md` antes de criar arquivos novos.
+
+Módulo de notícias: `docs/NOTICIAS.md`.

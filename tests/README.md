@@ -16,3 +16,8 @@ Variável opcional:
 ```bash
 set API_URL=http://localhost:5000
 ```
+
+## Notícias
+
+- `tests/unit/`: regras puras (associação, classificação, RSS). Rode com `PYTHONPATH=backend pytest tests/unit`.
+- `tests/integration/test_noticias_db.py`: fluxo completo contra um PostgreSQL migrado (`DATABASE_URL`). Usa apenas dados sintéticos e limpa o que cria.
