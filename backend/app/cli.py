@@ -1,5 +1,6 @@
 """Comandos de linha de comando: migrações e coleta de notícias."""
 import os
+from datetime import date
 from pathlib import Path
 
 import click
@@ -58,3 +59,32 @@ def register_cli(app):
                 f"atualizados={c.itens_atualizados} descartados={c.itens_descartados}"
                 + (f" | {c.mensagem}" if c.mensagem else "")
             )
+
+    @app.cli.command("importar-camara-inicial")
+    @click.option("--ano-inicial", type=int, default=lambda: date.today().year, show_default="ano atual", help="Primeiro ano de despesas e proposições a importar.")
+    @click.option("--ano-final", type=int, default=lambda: date.today().year, show_default="ano atual", help="Último ano de despesas e proposições a importar.")
+    @click.option("--limite-deputados", type=click.IntRange(min=1), default=None, help="Limita deputados para teste controlado.")
+    def importar_camara_inicial(ano_inicial, ano_final, limite_deputados):
+        """Importa dados iniciais da Câmara. Execute manualmente, fora das requisições web."""
+        if ano_inicial > ano_final:
+            raise click.ClickException("ano-inicial não pode ser maior que ano-final.")
+        from app.services.camara.sincronizacao import CamaraSyncService
+        try:
+            resultados = CamaraSyncService().importar_inicial(ano_inicial, ano_final, limite_deputados)
+            for entidade, (lidos, novos, atualizados) in resultados.items():
+                click.echo(f"{entidade}: lidos={lidos} novos={novos} atualizados={atualizados}")
+        except Exception as exc:
+            raise click.ClickException(f"Importação inicial da Câmara falhou: {exc}") from exc
+
+    @app.cli.command("atualizar-camara")
+    @click.option("--ano", type=int, default=lambda: date.today().year, show_default="ano atual", help="Ano a consultar para despesas e proposições.")
+    @click.option("--limite-deputados", type=click.IntRange(min=1), default=None, help="Limita deputados para teste controlado.")
+    def atualizar_camara(ano, limite_deputados):
+        """Atualiza os registros já importados e incorpora novos dados da Câmara."""
+        from app.services.camara.sincronizacao import CamaraSyncService
+        try:
+            resultados = CamaraSyncService().atualizar(ano, limite_deputados)
+            for entidade, (lidos, novos, atualizados) in resultados.items():
+                click.echo(f"{entidade}: lidos={lidos} novos={novos} atualizados={atualizados}")
+        except Exception as exc:
+            raise click.ClickException(f"Atualização da Câmara falhou: {exc}") from exc

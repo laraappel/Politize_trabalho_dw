@@ -23,6 +23,10 @@ class PoliticoRef(db.Model):
     partido = db.Column(db.String(20))
     id_camara = db.Column(db.Integer, unique=True)
     id_senado = db.Column(db.Integer, unique=True)
+    origem_dados = db.Column(db.String(80))
+    coletado_em = db.Column(db.DateTime(timezone=True))
+    atualizado_em = db.Column(db.DateTime(timezone=True))
+    dados_camara = db.Column(JSONB)
 
     @property
     def nome_exibicao(self):

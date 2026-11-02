@@ -1,0 +1,42 @@
+ADICOES — INTEGRACAO COM A CAMARA DOS DEPUTADOS
+
+Este pacote contem SOMENTE os arquivos novos e os arquivos que precisam ser
+atualizados no projeto Politize_trabalho_dw. Ele nao contem o projeto inteiro.
+
+COMO APLICAR
+1. Faça uma cópia/commit do estado atual do projeto antes de começar.
+2. Extraia o conteúdo deste ZIP na pasta raiz do repositório existente.
+3. Quando o Windows perguntar, permita mesclar as pastas e substituir os arquivos.
+4. Confira o diff do Git antes de fazer commit.
+
+ARQUIVOS NOVOS (adicione ao Git):
+- backend/app/adapters/__init__.py
+- backend/app/adapters/camara/__init__.py
+- backend/app/adapters/camara/client.py
+- backend/app/models/camara.py
+- backend/app/routes/camara.py
+- backend/app/services/camara/__init__.py
+- backend/app/services/camara/sincronizacao.py
+- database/migrations/003_camara.sql
+- docs/CAMARA.md
+- tests/unit/test_camara_adapter.py
+- tests/unit/test_camara_normalizacao.py
+
+ARQUIVOS EXISTENTES MODIFICADOS (serão substituídos pelas versões deste pacote):
+- .env.example
+- README.md
+- backend/app/cli.py
+- backend/app/models/__init__.py
+- backend/app/models/noticia.py
+- backend/app/routes/__init__.py
+- docker-compose.yml
+
+ATENÇÃO
+- Os arquivos modificados incluem registro do blueprint, modelos e comandos CLI.
+  Se algum colega alterou esses mesmos arquivos depois que o ZIP original foi
+  enviado, compare/mescle as mudanças antes de substituir.
+- Não copie o arquivo .env real nem compartilhe credenciais. O .env.example é
+  apenas um modelo sem segredos.
+- Depois de copiar, revise: git status e git diff. Só então faça o commit.
+- A importação real ainda precisa ser executada no ambiente do grupo com acesso
+  à internet e ao PostgreSQL; este pacote não afirma que isso já foi validado.
