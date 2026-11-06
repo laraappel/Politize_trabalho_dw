@@ -4,10 +4,13 @@ const obterDados = () => {
   return Array.isArray(demonstracaoData) ? demonstracaoData : demonstracaoData.noticias || [];
 };
 
-// Exportação da função de filtros solicitada pela página
+// Exportações para cobrir todas as funções chamadas pelos componentes do projeto
+export async function listarNoticiasDoPolitico() {
+  return obterDados();
+}
+
 export async function obterFiltrosNoticias() {
   const lista = obterDados();
-  // Retorna categorias ou filtros únicos extraídos das notícias
   const categorias = [...new Set(lista.map(n => n.categoria).filter(Boolean))];
   return { categorias };
 }
@@ -39,6 +42,7 @@ export async function getNoticiaById(id) {
 }
 
 export default {
+  listarNoticiasDoPolitico,
   obterFiltrosNoticias,
   listarVeiculos,
   listarNoticias,
