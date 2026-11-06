@@ -3,11 +3,13 @@ import os
 
 import pytest
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 
 if not os.getenv("DATABASE_URL"):
     pytest.skip("DATABASE_URL não definido", allow_module_level=True)
 
 from app import create_app
+from app.errors import ErroValidacao
 from app.extensions import db
 from app.models.politico import Politico
 from app.services.importacao import importar_pacote
@@ -138,6 +140,12 @@ def test_importacao_idempotente_filtros_e_dados_ausentes(app):
     assert financeiro["completo"] is False
     assert financeiro["soma_valores_informados"] == "100.50"
 
+    for recurso in ("mandatos", "projetos", "votacoes", "despesas"):
+        resposta = c.get(f"/api/politicos/{pid}/{recurso}").get_json()
+        assert {"items", "total", "page", "per_page", "pages"} <= resposta.keys()
+        esperado = 2 if recurso == "despesas" else 1
+        assert resposta["total"] == esperado
+
     noticias = c.get(f"/api/politicos/{pid}/noticias").get_json()
     assert noticias["total"] >= 1
     assert all(any(pol["id"] == pid for pol in n["politicos"]) for n in noticias["items"])
@@ -152,3 +160,58 @@ def test_importacao_idempotente_filtros_e_dados_ausentes(app):
     assert c.get("/api/politicos?per_page=999").status_code == 400
     pag = c.get("/api/politicos?per_page=1&page=1").get_json()
     assert pag["per_page"] == 1 and len(pag["items"]) <= 1
+
+    panorama = c.get("/api/transparencia").get_json()
+    assert {"politicos", "mandatos", "projetos", "votacoes", "despesas"} <= panorama.keys()
+
+
+def test_importacao_rejeita_votacao_com_referencia_de_projeto_inexistente(app):
+    pacote = _pacote("teste-integracao-projeto-inexistente")
+    pacote["politicos"][0]["votacoes"][0]["projeto"] = "nao-existe"
+
+    with app.app_context():
+        with pytest.raises(ErroValidacao, match="projeto inexistente"):
+            importar_pacote(pacote)
+        db.session.rollback()
+
+
+def test_banco_rejeita_periodo_invalido_e_fonte_oficial_ausente(app):
+    with app.app_context():
+        politico_id = db.session.scalar(db.select(Politico.id).limit(1))
+        assert politico_id is not None
+
+        with pytest.raises(IntegrityError):
+            db.session.execute(
+                text(
+                    """
+                    INSERT INTO despesas (
+                        politico_id, categoria, descricao, periodo_inicio, periodo_fim,
+                        origem_dados
+                    ) VALUES (
+                        :politico_id, 'teste', 'período inválido', '2026-02-01',
+                        '2026-01-01', 'demonstracao'
+                    )
+                    """
+                ),
+                {"politico_id": politico_id},
+            )
+            db.session.commit()
+        db.session.rollback()
+
+        with pytest.raises(IntegrityError):
+            db.session.execute(
+                text(
+                    """
+                    INSERT INTO despesas (
+                        politico_id, categoria, descricao, periodo_inicio, periodo_fim,
+                        origem_dados
+                    ) VALUES (
+                        :politico_id, 'teste', 'fonte ausente', '2026-01-01',
+                        '2026-01-31', 'oficial'
+                    )
+                    """
+                ),
+                {"politico_id": politico_id},
+            )
+            db.session.commit()
+        db.session.rollback()

@@ -9,7 +9,9 @@ const CHAVES = ["politico", "veiculo", "assunto", "natureza", "de", "ate", "orde
 function NoticiasPage() {
   const [params, setParams] = useSearchParams();
   const [opcoes, setOpcoes] = useState({ politicos: [], veiculos: [], assuntos: [], naturezas: [] });
+  const [erroFiltros, setErroFiltros] = useState("");
   const [fontes, setFontes] = useState([]);
+  const [erroFontes, setErroFontes] = useState("");
   const [resultado, setResultado] = useState({ status: "loading" });
 
   const page = Math.max(1, Number(params.get("page")) || 1);
@@ -17,8 +19,12 @@ function NoticiasPage() {
   const consulta = JSON.stringify([filtros, page]);
 
   useEffect(() => {
-    obterFiltrosNoticias().then(setOpcoes).catch(() => {});
-    listarVeiculos().then((d) => setFontes(d.items)).catch(() => {});
+    obterFiltrosNoticias()
+      .then(setOpcoes)
+      .catch((erro) => setErroFiltros(erro.message));
+    listarVeiculos()
+      .then((d) => setFontes(d.items))
+      .catch((erro) => setErroFontes(erro.message));
   }, []);
 
   useEffect(() => {
@@ -119,6 +125,8 @@ function NoticiasPage() {
           </button>
         )}
       </form>
+      {erroFiltros && <p role="alert" className="status-error">Não foi possível carregar as opções de filtro: {erroFiltros}</p>}
+      {erroFontes && <p role="alert" className="status-error">Não foi possível carregar as fontes: {erroFontes}</p>}
 
       <div aria-live="polite">
         {resultado.status === "error" && (

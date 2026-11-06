@@ -47,7 +47,7 @@ function HomePage() {
         <li>
           <IconBalance className="icon" />
           <h2>Transparência</h2>
-          <p>Acompanhe remunerações, despesas e patrimônio declarado.</p>
+          <p>Consulte despesas cadastradas e os valores informados por período e categoria.</p>
         </li>
         <li>
           <IconNews className="icon" />

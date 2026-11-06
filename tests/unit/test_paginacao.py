@@ -1,8 +1,9 @@
 from app.errors import ErroValidacao
 from app.paginacao import envelope, escapar_like, inteiro, pagina
-from app.services.importacao import validar_pacote
+from app.services.importacao import _origem, _url_http, validar_pacote
 from app.services.politicos import resumo_despesas
 from types import SimpleNamespace
+import pytest
 
 
 def test_envelope_nao_inventa_pagina_quando_vazio():
@@ -42,6 +43,37 @@ def test_pacote_invalido():
         assert False
     except ErroValidacao:
         pass
+
+
+def test_origem_oficial_exige_fonte_http_rastreavel():
+    with pytest.raises(ErroValidacao, match="fonte_nome e fonte_url"):
+        _origem({"origem_dados": "oficial", "fonte_nome": "Fonte"})
+
+    assert _origem(
+        {
+            "origem_dados": "oficial",
+            "fonte_nome": "Fonte oficial",
+            "fonte_url": "https://dados.gov.br/registro",
+        }
+    ) == "oficial"
+
+
+@pytest.mark.parametrize("url", ["javascript:alert(1)", "//dados.gov.br/registro", ""])
+def test_origem_oficial_rejeita_url_sem_http(url):
+    with pytest.raises(ErroValidacao):
+        _origem(
+            {
+                "origem_dados": "oficial",
+                "fonte_nome": "Fonte oficial",
+                "fonte_url": url,
+            }
+        )
+
+
+def test_url_de_noticia_precisa_ser_http_com_host():
+    assert _url_http("https://fonte.example/noticia") is True
+    assert _url_http("javascript:alert(1)") is False
+    assert _url_http("//fonte.example/noticia") is False
 
 
 def test_resumo_despesas_nao_trata_ausencia_como_zero():
