@@ -1,10 +1,11 @@
 import demonstracaoData from './demonstracao.json';
 
 const obterDados = () => {
-  return Array.isArray(demonstracaoData) ? demonstracaoData : demonstracaoData.noticias || [];
+  if (Array.isArray(demonstracaoData)) return demonstracaoData;
+  if (demonstracaoData && Array.isArray(demonstracaoData.noticias)) return demonstracaoData.noticias;
+  return [];
 };
 
-// Exportações para cobrir todas as funções chamadas pelos componentes do projeto
 export async function listarNoticiasDoPolitico() {
   return obterDados();
 }
