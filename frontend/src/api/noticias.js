@@ -4,7 +4,11 @@ const obterDados = () => {
   return Array.isArray(demonstracaoData) ? demonstracaoData : demonstracaoData.noticias || [];
 };
 
-// Exportações nomeadas para satisfazer NoticiasPage.jsx, NoticiaCard.jsx e outros componentes
+// Exportações para resolver todas as chamadas de funções nos componentes
+export async function listarVeiculos() {
+  return obterDados();
+}
+
 export async function listarNoticias() {
   return obterDados();
 }
@@ -28,6 +32,7 @@ export async function getNoticiaById(id) {
 }
 
 export default {
+  listarVeiculos,
   listarNoticias,
   getNoticias,
   obterNoticias,
