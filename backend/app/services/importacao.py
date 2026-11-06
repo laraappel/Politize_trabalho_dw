@@ -3,6 +3,7 @@ import json
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from sqlalchemy import select
 
@@ -26,10 +27,21 @@ VEICULO_DEMO = {
 }
 
 
-def _origem(valor, padrao="demonstracao"):
-    codigo = (valor or padrao).strip()
+def _origem(item, padrao="demonstracao"):
+    codigo = item.get("origem_dados") or padrao
+    if not isinstance(codigo, str):
+        raise ErroValidacao("parametro_invalido", "origem_dados deve ser texto.")
+    codigo = codigo.strip()
     if codigo not in ORIGENS:
         raise ErroValidacao("parametro_invalido", f"origem_dados inválida: {codigo}")
+    if codigo == "oficial":
+        nome = _texto(item.get("fonte_nome"), 200)
+        url = _texto(item.get("fonte_url"))
+        if not nome or not _url_http(url):
+            raise ErroValidacao(
+                "parametro_invalido",
+                "Registros oficiais exigem fonte_nome e fonte_url HTTP(S).",
+            )
     return codigo
 
 
@@ -83,6 +95,16 @@ def _texto(valor, maximo=None):
     return texto or None
 
 
+def _url_http(valor):
+    if not isinstance(valor, str) or not valor or len(valor) > 2048:
+        return False
+    try:
+        partes = urlsplit(valor)
+    except ValueError:
+        return False
+    return partes.scheme in ("http", "https") and bool(partes.netloc)
+
+
 def validar_pacote(pacote: dict):
     if not isinstance(pacote, dict):
         raise ErroValidacao("parametro_invalido", "O pacote deve ser um objeto JSON.")
@@ -105,6 +127,7 @@ def _veiculo_demo() -> Veiculo:
 
 
 def _upsert_politico(item: dict) -> tuple[Politico, bool]:
+    origem = _origem(item)
     slug = _texto(item.get("slug") or item.get("chave"), 80)
     if not slug:
         raise ErroValidacao("parametro_invalido", "Cada político precisa de um slug estável.")
@@ -122,7 +145,7 @@ def _upsert_politico(item: dict) -> tuple[Politico, bool]:
     p.partido = _texto(item.get("partido"), 20)
     p.id_camara = item.get("id_camara")
     p.id_senado = item.get("id_senado")
-    p.origem_dados = _origem(item.get("origem_dados"))
+    p.origem_dados = origem
     p.fonte_nome = _texto(item.get("fonte_nome"), 200)
     p.fonte_url = _texto(item.get("fonte_url"))
     db.session.flush()
@@ -130,10 +153,14 @@ def _upsert_politico(item: dict) -> tuple[Politico, bool]:
 
 
 def _upsert_mandato(politico_id, item):
+    origem = _origem(item)
     cargo = _texto(item.get("cargo"), 80)
     inicio = _data(item.get("inicio"), "inicio")
     if not cargo or not inicio:
         raise ErroValidacao("parametro_invalido", "Mandato exige cargo e inicio.")
+    fim = _data(item.get("fim"), "fim")
+    if fim and fim < inicio:
+        raise ErroValidacao("parametro_invalido", "'fim' não pode ser anterior a 'inicio'.")
     esfera = (item.get("esfera") or "federal").strip()
     if esfera not in ESFERAS:
         raise ErroValidacao("parametro_invalido", f"Esfera inválida: {esfera}")
@@ -150,8 +177,8 @@ def _upsert_mandato(politico_id, item):
     m.municipio = _texto(item.get("municipio"), 120)
     m.partido = _texto(item.get("partido"), 20)
     m.legislatura = _texto(item.get("legislatura"), 40)
-    m.fim = _data(item.get("fim"), "fim")
-    m.origem_dados = _origem(item.get("origem_dados"))
+    m.fim = fim
+    m.origem_dados = origem
     m.fonte_nome = _texto(item.get("fonte_nome"), 200)
     m.fonte_url = _texto(item.get("fonte_url"))
     if existente is None:
@@ -160,20 +187,31 @@ def _upsert_mandato(politico_id, item):
 
 
 def _upsert_projeto(politico_id, item) -> tuple[Projeto, bool]:
+    origem = _origem(item)
     casa = (_texto(item.get("casa"), 30) or "").lower()
-    numero, ano = item.get("numero"), item.get("ano")
-    if not casa or numero is None or ano is None:
+    if not casa or item.get("numero") is None or item.get("ano") is None:
         raise ErroValidacao("parametro_invalido", "Projeto exige casa, numero e ano.")
+    try:
+        numero, ano = int(str(item["numero"])), int(str(item["ano"]))
+    except (TypeError, ValueError):
+        raise ErroValidacao("parametro_invalido", "'numero' e 'ano' do projeto devem ser inteiros.")
+    if numero < 1 or ano < 1823:
+        raise ErroValidacao("parametro_invalido", "'numero' e 'ano' do projeto estão fora do intervalo permitido.")
     existente = db.session.scalar(
-        select(Projeto).where(Projeto.casa == casa, Projeto.numero == int(numero), Projeto.ano == int(ano))
+        select(Projeto).where(Projeto.casa == casa, Projeto.numero == numero, Projeto.ano == ano)
     )
-    pr = existente or Projeto(casa=casa, numero=int(numero), ano=int(ano))
+    if existente is not None and existente.politico_id != politico_id:
+        raise ErroValidacao(
+            "projeto_ja_vinculado",
+            "O projeto já está vinculado a outro político; vínculos de coautoria ainda não são suportados.",
+        )
+    pr = existente or Projeto(casa=casa, numero=numero, ano=ano)
     pr.politico_id = politico_id
     pr.ementa = _texto(item.get("ementa"))
     pr.situacao = _texto(item.get("situacao"), 40)
     pr.data_apresentacao = _data(item.get("data_apresentacao"), "data_apresentacao")
     pr.url_oficial = _texto(item.get("url_oficial"))
-    pr.origem_dados = _origem(item.get("origem_dados"))
+    pr.origem_dados = origem
     pr.fonte_nome = _texto(item.get("fonte_nome"), 200)
     pr.fonte_url = _texto(item.get("fonte_url"))
     if existente is None:
@@ -183,6 +221,7 @@ def _upsert_projeto(politico_id, item) -> tuple[Projeto, bool]:
 
 
 def _upsert_votacao(politico_id, item, projetos_por_chave: dict):
+    origem = _origem(item)
     ident = _texto(item.get("identificador_externo"), 80)
     casa = _texto(item.get("casa"), 30)
     if not ident or not casa:
@@ -192,6 +231,13 @@ def _upsert_votacao(politico_id, item, projetos_por_chave: dict):
         voto = None
     elif voto not in VOTOS:
         raise ErroValidacao("parametro_invalido", f"Voto inválido: {voto}")
+    chave_proj = item.get("projeto")
+    projeto = projetos_por_chave.get(chave_proj) if chave_proj else None
+    if chave_proj and projeto is None:
+        raise ErroValidacao(
+            "parametro_invalido",
+            f"Votação referencia projeto inexistente no pacote: {chave_proj}.",
+        )
     existente = db.session.scalar(
         select(Votacao).where(
             Votacao.politico_id == politico_id,
@@ -204,25 +250,26 @@ def _upsert_votacao(politico_id, item, projetos_por_chave: dict):
     v.ementa = _texto(item.get("ementa"))
     v.voto = voto
     v.url_oficial = _texto(item.get("url_oficial"))
-    v.origem_dados = _origem(item.get("origem_dados"))
+    v.origem_dados = origem
     v.fonte_nome = _texto(item.get("fonte_nome"), 200)
     v.fonte_url = _texto(item.get("fonte_url"))
-    chave_proj = item.get("projeto")
-    if chave_proj:
-        pr = projetos_por_chave.get(chave_proj)
-        v.projeto_id = pr.id if pr else None
+    if projeto is not None:
+        v.projeto_id = projeto.id
     if existente is None:
         db.session.add(v)
     return existente is None
 
 
 def _upsert_despesa(politico_id, item):
+    origem = _origem(item)
     categoria = _texto(item.get("categoria"), 80)
     descricao = _texto(item.get("descricao"))
     inicio = _data(item.get("periodo_inicio") or (item.get("periodo") or {}).get("inicio"), "periodo_inicio")
     fim = _data(item.get("periodo_fim") or (item.get("periodo") or {}).get("fim"), "periodo_fim")
     if not categoria or not descricao or not inicio or not fim:
         raise ErroValidacao("parametro_invalido", "Despesa exige categoria, descricao e período.")
+    if fim < inicio:
+        raise ErroValidacao("parametro_invalido", "'periodo_fim' não pode ser anterior a 'periodo_inicio'.")
     existente = db.session.scalar(
         select(Despesa).where(
             Despesa.politico_id == politico_id,
@@ -241,7 +288,7 @@ def _upsert_despesa(politico_id, item):
     )
     d.valor = _dinheiro(item.get("valor"), "valor")
     d.esfera = _texto(item.get("esfera"), 20)
-    d.origem_dados = _origem(item.get("origem_dados"))
+    d.origem_dados = origem
     d.fonte_nome = _texto(item.get("fonte_nome"), 200)
     d.fonte_url = _texto(item.get("fonte_url"))
     if existente is None:
@@ -252,7 +299,7 @@ def _upsert_despesa(politico_id, item):
 def _upsert_noticia(politico: Politico, item, veiculo: Veiculo):
     url = _texto(item.get("url_original"))
     titulo = _texto(item.get("titulo_original"))
-    if not url or not titulo:
+    if not _url_http(url) or not titulo:
         raise ErroValidacao("parametro_invalido", "Notícia de demonstração exige título e URL.")
     canonica = canonicalizar_url(url)
     publicado = _datetime(item.get("publicado_em"))

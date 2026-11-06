@@ -1,86 +1,77 @@
 # Voto Transparente
 
-Plataforma brasileira de transparência política, educação cidadã e acompanhamento eleitoral. O projeto é apartidário, acessível e baseado em informações verificáveis.
-
-Esta etapa entrega a **base técnica** para uma equipe de estudantes trabalhar em módulos independentes: frontend React, backend Flask, PostgreSQL e Docker.
+Plataforma estudantil apartidária de transparência política e educação cidadã. A aplicação usa React/JavaScript, Flask/Python, PostgreSQL e Docker Compose.
 
 ## Requisitos
 
-- Docker
-- Docker Compose
-- Git
+- Docker Desktop em execução (Docker Compose v2 incluído)
+- Git, para clonar o repositório
 
-## Como executar
+## Instalação e execução
 
-1. Copie o arquivo de exemplo de variáveis de ambiente:
-
-```bash
-cp .env.example .env
-```
-
-No PowerShell:
+No PowerShell, na pasta do repositório:
 
 ```powershell
-Copy-Item .env.example .env
-```
-
-2. Inicie os serviços:
-
-```bash
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 docker compose up --build
 ```
 
-3. Acesse:
+Na primeira execução, o Compose baixa as imagens, constrói os serviços, cria o esquema do banco e importa os dados fictícios de demonstração. Aguarde os três serviços aparecerem como `healthy` em outro terminal:
 
-- Frontend: [http://localhost:3000](http://localhost:3000)
-- API de saúde: [http://localhost:5000/api/health](http://localhost:5000/api/health) (ou a porta definida em `BACKEND_PORT`)
+```powershell
+docker compose ps
+```
 
-4. Para parar os serviços, use `Ctrl+C` se estiverem em primeiro plano, ou:
+Acesse:
 
-```bash
+- Aplicação: http://localhost:3000
+- Saúde da API e do banco: http://localhost:5000/api/health
+
+Se as portas padrão estiverem ocupadas, altere `FRONTEND_PORT`, `BACKEND_PORT` e `POSTGRES_PORT` no `.env`; atualize também `VITE_API_URL` para a porta do backend. O arquivo `.env` é local e não deve ser compartilhado ou commitado. Os valores de exemplo são apenas para desenvolvimento local.
+
+Para parar a stack em primeiro plano, pressione `Ctrl+C`; em seguida, execute:
+
+```powershell
 docker compose down
 ```
 
-Os dados do PostgreSQL ficam no volume `postgres_data`. Para apagar o banco local e recomeçar:
+Esse comando preserva o volume do PostgreSQL. **`docker compose down -v` apaga o banco local** e só deve ser usado quando quiser descartar os dados e inicializar o banco novamente.
 
-```bash
-docker compose down -v
+## Funcionalidades disponíveis
+
+- Pesquisa de políticos por nome, cargo, partido e UF, com paginação.
+- Perfil com mandatos, projetos, votações, despesas, fontes e notícias relacionadas.
+- Transparência com filtros de despesas por categoria, UF e período; valores ausentes permanecem ausentes.
+- Notícias com filtros, classificação contextual, links para as matérias e coleta manual de fontes autorizadas.
+- Colinha eleitoral privada armazenada apenas no `localStorage` do navegador.
+- Importação idempotente de pacotes JSON de demonstração ou oficiais.
+
+O conjunto importado por padrão é fictício e está identificado como demonstração. A importação oficial exige nome e URL HTTP(S) da fonte por registro. Não há sincronização eleitoral oficial automática.
+
+## Funcionalidades pendentes / limitações
+
+- Os modelos de candidaturas e outras entidades eleitorais em `backend/app/models/` não estão ligados a migrações, serviços ou rotas; não fazem parte da API ativa.
+- Remuneração, patrimônio declarado, propostas de campanha e votação/filiação eleitoral não têm fluxos completos disponíveis na interface.
+- Coleta de notícias não é agendada; execute-a manualmente. A Agência Brasil é a única fonte autorizada implementada; outras fontes permanecem bloqueadas até verificação de licença.
+- Projetos aceitam apenas um político vinculado; coautoria ainda não é suportada.
+- Não há contas de usuário. A colinha fica no navegador e não é sincronizada.
+
+## Testes e verificações
+
+Com a stack em execução:
+
+```powershell
+docker compose exec -T backend pytest -c /app/pytest.ini /tests -q
+docker compose exec -T frontend npm run build
 ```
 
-## Verificar o funcionamento
-
-```bash
-docker compose ps
-curl http://localhost:5000/api/health
-```
-
-Resposta esperada da API:
-
-```json
-{
-  "status": "ok",
-  "api": { "status": "ok" },
-  "database": { "status": "ok" },
-  "service": "voto-transparente-api"
-}
-```
-
-Testes de integração (com a stack no ar):
-
-```bash
-docker compose exec backend pytest /tests -q
-```
+O primeiro comando executa testes unitários e de integração contra o banco da stack. Mais detalhes sobre API, banco, importação e ambiente estão em [docs/API.md](docs/API.md), [database/README.md](database/README.md) e [docs/AMBIENTE.md](docs/AMBIENTE.md).
 
 ## Estrutura
 
-```
-frontend/   aplicação React
-backend/    API Flask
-database/   scripts SQL
-docs/       documentação da equipe
-tests/      testes de integração
-```
-
-Leia `docs/CONVENCOES.md` antes de criar arquivos novos.
-
-Módulo de notícias: `docs/NOTICIAS.md`.
+- `frontend/`: interface React/Vite.
+- `backend/`: API Flask e regras de negócio.
+- `database/init/` e `database/migrations/`: esquema inicial e migrações SQL.
+- `database/seeds/`: conjunto fictício de demonstração.
+- `tests/`: testes unitários e de integração.
+- `docs/`: contratos e guias do projeto.

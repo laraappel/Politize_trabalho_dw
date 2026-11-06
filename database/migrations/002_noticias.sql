@@ -3,11 +3,9 @@
 -- Aplicação: `docker compose exec backend flask --app wsgi migrate`
 
 -- ---------------------------------------------------------------------------
--- DEPENDÊNCIA: tabela de políticos.
--- O módulo de políticos ainda não existe neste repositório. Criamos o mínimo
--- necessário para vincular notícias. Se o módulo de políticos definir esta
--- tabela antes, ela prevalece (IF NOT EXISTS) e o associador deve ser adaptado
--- em backend/app/services/noticias/politicos_repo.py.
+-- DEPENDÊNCIA: cadastro compartilhado de políticos.
+-- Cria a base mínima quando necessário; 003_dominio.sql a estende com campos
+-- usados pelo módulo ativo de políticos.
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS politicos (
     id            BIGSERIAL PRIMARY KEY,

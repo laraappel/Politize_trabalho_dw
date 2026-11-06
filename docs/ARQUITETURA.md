@@ -17,13 +17,17 @@ Navegador  -->  frontend (React)
 Navegador  -->  backend (Flask) --> PostgreSQL
 ```
 
-## Decisões desta etapa
+## Módulos ativos
 
 - React com JavaScript (sem TypeScript), para reduzir a curva da equipe.
 - Vite em vez de Create React App, por recarga rápida e suporte simples no Docker.
 - Flask com application factory e blueprints, para cada módulo registrar suas rotas sem editar um único arquivo gigante.
-- SQLAlchemy já configurado, mas sem modelos de domínio nesta etapa.
-- Sem autenticação ou integração eleitoral. Notícias: apenas fontes com acesso autorizado documentado, sem scraping (ver `docs/NOTICIAS.md`).
+- SQLAlchemy mantém o cadastro compartilhado de políticos, mandatos, projetos, votações, despesas e notícias.
+- Não há autenticação de usuários. O token administrativo é restrito às operações editoriais de notícias.
+- A colinha fica no `localStorage` do navegador e não é enviada ao servidor.
+- Coleta de notícias é manual e restrita a fontes autorizadas; consulte `docs/NOTICIAS.md`.
+
+Modelos eleitorais em inglês (`Politician`, `Candidacy`, `PoliticalTerm` e outros) não estão importados pelo registro ativo de modelos, não têm migrações correspondentes e não fazem parte da API.
 
 ## Contratos da API
 
@@ -31,6 +35,8 @@ Navegador  -->  backend (Flask) --> PostgreSQL
 - Datas em ISO 8601.
 - Erros no formato `{ "error": "codigo_estavel", "message": "texto para humanos" }`.
 - Códigos HTTP semânticos: 200, 400, 404, 405, 500, 503.
+
+Rotas, filtros e campos estão documentados em `docs/API.md`. A serialização de datas, valores e origem é compartilhada pelo backend; o frontend centraliza requisições e erros em `frontend/src/api/client.js`.
 
 O endpoint `GET /api/health` reporta **separadamente**:
 

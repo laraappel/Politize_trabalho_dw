@@ -11,15 +11,19 @@ const CHAVES = ["categoria", "uf", "de", "ate"];
 function TransparenciaPage() {
   const [params, setParams] = useSearchParams();
   const [panorama, setPanorama] = useState(null);
+  const [erroPanorama, setErroPanorama] = useState("");
   const [opcoes, setOpcoes] = useState({ categorias: [], ufs: [] });
+  const [erroFiltros, setErroFiltros] = useState("");
   const [resultado, setResultado] = useState({ status: "loading" });
   const page = Math.max(1, Number(params.get("page")) || 1);
   const filtros = Object.fromEntries(CHAVES.map((k) => [k, params.get(k) || ""]));
   const consulta = JSON.stringify([filtros, page]);
 
   useEffect(() => {
-    obterPanorama().then(setPanorama).catch(() => {});
-    obterFiltrosTransparencia().then(setOpcoes).catch(() => {});
+    obterPanorama().then(setPanorama).catch((erro) => setErroPanorama(erro.message));
+    obterFiltrosTransparencia()
+      .then(setOpcoes)
+      .catch((erro) => setErroFiltros(erro.message));
   }, []);
 
   useEffect(() => {
@@ -75,6 +79,7 @@ function TransparenciaPage() {
           </li>
         </ul>
       )}
+      {erroPanorama && <p role="alert" className="status-error">Não foi possível carregar o panorama: {erroPanorama}</p>}
 
       <form className="politicos-filtros" onSubmit={(e) => e.preventDefault()} aria-label="Filtros de despesas">
         <label>
@@ -104,6 +109,7 @@ function TransparenciaPage() {
           <input type="date" value={filtros.ate} min={filtros.de || undefined} onChange={aoMudar("ate")} />
         </label>
       </form>
+      {erroFiltros && <p role="alert" className="status-error">Não foi possível carregar as opções de filtro: {erroFiltros}</p>}
 
       {resumo && resumo.registros > 0 && (
         <p className="notice">

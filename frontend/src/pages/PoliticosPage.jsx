@@ -10,6 +10,7 @@ const CHAVES = ["q", "cargo", "partido", "uf"];
 function PoliticosPage() {
   const [params, setParams] = useSearchParams();
   const [opcoes, setOpcoes] = useState({ cargos: [], partidos: [], ufs: [] });
+  const [erroFiltros, setErroFiltros] = useState("");
   const [resultado, setResultado] = useState({ status: "loading" });
 
   const page = Math.max(1, Number(params.get("page")) || 1);
@@ -17,7 +18,9 @@ function PoliticosPage() {
   const consulta = JSON.stringify([filtros, page]);
 
   useEffect(() => {
-    obterFiltrosPoliticos().then(setOpcoes).catch(() => {});
+    obterFiltrosPoliticos()
+      .then(setOpcoes)
+      .catch((erro) => setErroFiltros(erro.message));
   }, []);
 
   useEffect(() => {
@@ -54,6 +57,7 @@ function PoliticosPage() {
         </p>
       </header>
 
+      {erroFiltros && <p role="alert" className="status-error">Não foi possível carregar as opções de filtro: {erroFiltros}</p>}
       <form className="politicos-filtros" onSubmit={(e) => e.preventDefault()} aria-label="Filtros de políticos">
         <label>
           Nome

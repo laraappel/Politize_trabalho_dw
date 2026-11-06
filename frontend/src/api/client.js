@@ -8,6 +8,17 @@ export class ApiError extends Error {
   }
 }
 
+async function lerResposta(response) {
+  try {
+    return await response.json();
+  } catch {
+    if (response.ok) {
+      throw new ApiError("A API retornou uma resposta inválida.", { status: response.status });
+    }
+    return {};
+  }
+}
+
 export async function apiGet(path, params = {}) {
   const query = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
@@ -20,7 +31,7 @@ export async function apiGet(path, params = {}) {
   } catch {
     throw new ApiError("Não foi possível conectar à API.");
   }
-  const data = await response.json().catch(() => ({}));
+  const data = await lerResposta(response);
   if (!response.ok) {
     throw new ApiError(data.message || "Falha ao consultar a API.", {
       codigo: data.error,
@@ -37,7 +48,7 @@ export async function getHealth() {
   } catch {
     throw new ApiError("Não foi possível conectar à API.");
   }
-  const data = await response.json().catch(() => ({}));
+  const data = await lerResposta(response);
   if (!response.ok && response.status !== 503) {
     throw new ApiError(data.message || "Falha ao consultar a API.");
   }
