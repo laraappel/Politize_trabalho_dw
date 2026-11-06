@@ -4,7 +4,14 @@ const obterDados = () => {
   return Array.isArray(demonstracaoData) ? demonstracaoData : demonstracaoData.noticias || [];
 };
 
-// Exportações para resolver todas as chamadas de funções nos componentes
+// Exportação da função de filtros solicitada pela página
+export async function obterFiltrosNoticias() {
+  const lista = obterDados();
+  // Retorna categorias ou filtros únicos extraídos das notícias
+  const categorias = [...new Set(lista.map(n => n.categoria).filter(Boolean))];
+  return { categorias };
+}
+
 export async function listarVeiculos() {
   return obterDados();
 }
@@ -32,6 +39,7 @@ export async function getNoticiaById(id) {
 }
 
 export default {
+  obterFiltrosNoticias,
   listarVeiculos,
   listarNoticias,
   getNoticias,
