@@ -19,11 +19,14 @@ function SobrePage() {
           <li>Verificabilidade: dados devem apontar para fontes oficiais ou públicas.</li>
         </ul>
 
-        <h2>Fontes previstas</h2>
+        <h2>Fontes e dados</h2>
         <p>
-          Integrações eleitorais e coleta automática de notícias ainda não fazem parte
-          desta etapa. As fontes candidatas incluem portais oficiais de transparência,
-          dados abertos do Congresso, TSE e diários oficiais.
+          O cadastro inicial usa um conjunto de demonstração, identificado na interface.
+          Notícias reais só entram a partir de fontes com autorização documentada
+          (hoje, a Agência Brasil). Dados oficiais futuros devem trazer nome e URL da fonte.
+        </p>
+        <p>
+          A colinha eleitoral não sai deste navegador. Não há conta de usuário nesta etapa.
         </p>
       </div>
     </section>

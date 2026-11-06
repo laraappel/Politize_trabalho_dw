@@ -1,32 +1,8 @@
 """Modelos do módulo de notícias. Tabelas definidas em database/migrations/002_noticias.sql."""
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB
-from sqlalchemy import Text
+from sqlalchemy.dialects.postgresql import JSONB
 
 from app.extensions import db
-
-
-class PoliticoRef(db.Model):
-    """Visão mínima de `politicos`, usada apenas para vincular notícias.
-
-    O módulo de políticos pode substituir/estender este modelo; o módulo de
-    notícias só lê id, nomes, cargo, partido e identificadores oficiais.
-    """
-
-    __tablename__ = "politicos"
-
-    id = db.Column(db.BigInteger, primary_key=True)
-    nome_completo = db.Column(db.String(200), nullable=False)
-    nome_urna = db.Column(db.String(200))
-    apelidos = db.Column(ARRAY(Text), nullable=False, default=list)
-    cargo = db.Column(db.String(80))
-    uf = db.Column(db.String(2))
-    partido = db.Column(db.String(20))
-    id_camara = db.Column(db.Integer, unique=True)
-    id_senado = db.Column(db.Integer, unique=True)
-
-    @property
-    def nome_exibicao(self):
-        return self.nome_urna or self.nome_completo
+from app.models.politico import Politico as PoliticoRef  # noqa: F401
 
 
 class Veiculo(db.Model):
@@ -94,7 +70,7 @@ class NoticiaPolitico(db.Model):
     criado_em = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
 
     noticia = db.relationship("Noticia", back_populates="associacoes")
-    politico = db.relationship("PoliticoRef")
+    politico = db.relationship("Politico")
 
 
 class NoticiaAtualizacao(db.Model):

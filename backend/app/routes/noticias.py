@@ -1,20 +1,15 @@
 from flask import Blueprint, jsonify, request
 
+from app.errors import ErroValidacao
 from app.services.noticias import consulta
-from app.services.noticias.consulta import ErroValidacao
 
 noticias_bp = Blueprint("noticias", __name__)
 
 
-@noticias_bp.errorhandler(ErroValidacao)
-def _erro_validacao(exc):
-    return jsonify({"error": exc.codigo, "message": exc.mensagem}), exc.http
-
-
 def _exigir_admin():
-    token = request.headers.get("X-Admin-Token")
     import os
 
+    token = request.headers.get("X-Admin-Token")
     if not os.getenv("ADMIN_TOKEN"):
         raise ErroValidacao("admin_desabilitado", "Operações editoriais estão desabilitadas (ADMIN_TOKEN não definido).", 403)
     if not consulta.admin_autorizado(token):

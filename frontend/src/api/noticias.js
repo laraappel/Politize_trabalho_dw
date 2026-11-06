@@ -1,22 +1,8 @@
-import { API_URL } from "./client";
+import { apiGet } from "./client";
 
-async function getJson(path, params = {}) {
-  const query = new URLSearchParams();
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") query.set(key, value);
-  });
-  const suffix = query.toString() ? `?${query}` : "";
-  const response = await fetch(`${API_URL}/api${path}${suffix}`);
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data.message || "Falha ao consultar a API de notícias.");
-  }
-  return data;
-}
-
-export const listarNoticias = (params) => getJson("/noticias", params);
-export const obterNoticia = (id) => getJson(`/noticias/${id}`);
-export const obterFiltrosNoticias = () => getJson("/noticias/filtros");
-export const listarVeiculos = () => getJson("/veiculos");
+export const listarNoticias = (params) => apiGet("/noticias", params);
+export const obterNoticia = (id) => apiGet(`/noticias/${id}`);
+export const obterFiltrosNoticias = () => apiGet("/noticias/filtros");
+export const listarVeiculos = () => apiGet("/veiculos");
 export const listarNoticiasDoPolitico = (politicoId, params) =>
-  getJson(`/politicos/${politicoId}/noticias`, params);
+  apiGet(`/politicos/${politicoId}/noticias`, params);

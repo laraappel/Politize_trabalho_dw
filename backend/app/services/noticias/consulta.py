@@ -8,6 +8,7 @@ from datetime import date, datetime, time, timedelta, timezone
 from sqlalchemy import exists, func, select
 from sqlalchemy.orm import selectinload
 
+from app.errors import ErroValidacao
 from app.extensions import db
 from app.models.noticia import (
     Noticia,
@@ -16,17 +17,11 @@ from app.models.noticia import (
     PoliticoRef,
     Veiculo,
 )
+from app.paginacao import PER_PAGE_MAX, PER_PAGE_PADRAO, data_iso, envelope, inteiro
 from app.services.noticias.classificacao import AVISOS, NATUREZAS, ROTULOS
 
 BRT = timezone(timedelta(hours=-3))  # Brasil sem horário de verão desde 2019
-PER_PAGE_PADRAO, PER_PAGE_MAX = 10, 50
 GRAUS = {"alta": "Alta", "media": "Média", "baixa": "Baixa", "manual": "Revisão manual"}
-
-
-class ErroValidacao(Exception):
-    def __init__(self, codigo: str, mensagem: str, http: int = 400):
-        super().__init__(mensagem)
-        self.codigo, self.mensagem, self.http = codigo, mensagem, http
 
 
 @dataclass
@@ -42,40 +37,17 @@ class Filtros:
     per_page: int = PER_PAGE_PADRAO
 
 
-def _int(args, nome, minimo=1, maximo=None):
-    bruto = args.get(nome)
-    if bruto in (None, ""):
-        return None
-    try:
-        v = int(bruto)
-    except ValueError:
-        raise ErroValidacao("parametro_invalido", f"'{nome}' deve ser um inteiro.")
-    if v < minimo or (maximo and v > maximo):
-        raise ErroValidacao("parametro_invalido", f"'{nome}' fora do intervalo permitido.")
-    return v
-
-
-def _data(args, nome):
-    bruto = args.get(nome)
-    if not bruto:
-        return None
-    try:
-        return date.fromisoformat(bruto)
-    except ValueError:
-        raise ErroValidacao("parametro_invalido", f"'{nome}' deve estar no formato AAAA-MM-DD.")
-
-
 def parse_filtros(args) -> Filtros:
     f = Filtros(
-        politico=_int(args, "politico"),
+        politico=inteiro(args, "politico"),
         veiculo=(args.get("veiculo") or None),
         assunto=(args.get("assunto") or None),
         natureza=(args.get("natureza") or None),
-        de=_data(args, "de"),
-        ate=_data(args, "ate"),
+        de=data_iso(args, "de"),
+        ate=data_iso(args, "ate"),
         ordem=args.get("ordem", "recentes"),
-        page=_int(args, "page") or 1,
-        per_page=_int(args, "per_page", maximo=PER_PAGE_MAX) or PER_PAGE_PADRAO,
+        page=inteiro(args, "page") or 1,
+        per_page=inteiro(args, "per_page", maximo=PER_PAGE_MAX) or PER_PAGE_PADRAO,
     )
     if f.ordem not in ("recentes", "antigas"):
         raise ErroValidacao("parametro_invalido", "'ordem' deve ser 'recentes' ou 'antigas'.")
@@ -178,13 +150,7 @@ def listar_noticias(f: Filtros) -> dict:
             selectinload(Noticia.associacoes).selectinload(NoticiaPolitico.politico),
         )
     ).all()
-    return {
-        "items": [serializar(n) for n in itens],
-        "total": total,
-        "page": f.page,
-        "per_page": f.per_page,
-        "pages": max(1, -(-total // f.per_page)),
-    }
+    return envelope([serializar(n) for n in itens], total, f.page, f.per_page)
 
 
 def obter_noticia(noticia_id: int) -> dict | None:
@@ -319,8 +285,8 @@ def listar_pendentes(page: int = 1, per_page: int = 20) -> dict:
     linhas = db.session.scalars(
         base.order_by(NoticiaPolitico.criado_em.desc()).limit(per_page).offset((page - 1) * per_page)
     ).all()
-    return {
-        "items": [
+    return envelope(
+        [
             {
                 "noticia_id": a.noticia_id,
                 "titulo_original": a.noticia.titulo_original,
@@ -332,7 +298,7 @@ def listar_pendentes(page: int = 1, per_page: int = 20) -> dict:
             }
             for a in linhas
         ],
-        "total": total,
-        "page": page,
-        "per_page": per_page,
-    }
+        total,
+        page,
+        per_page,
+    )

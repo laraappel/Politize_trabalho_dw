@@ -9,9 +9,8 @@ function Footer() {
           transparência política e educação cidadã.
         </p>
         <p>
-          As informações futuras serão baseadas em fontes oficiais e públicas. Consulte
-          a página <Link to="/sobre">Sobre</Link> para conhecer o propósito e as fontes
-          previstas.
+          Dados de demonstração são fictícios e identificados na interface. Consulte
+          a página <Link to="/sobre">Sobre</Link> para fontes e limitações.
         </p>
       </div>
     </footer>
