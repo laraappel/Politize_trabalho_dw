@@ -25,9 +25,17 @@ function slugify(texto) {
     .replace(/^-|-$/g, "") || "sem-nome";
 }
 
+// Só exibe notícias com link direto e data de publicação confirmados.
+// Itens com `verificada: false` ficam no JSON aguardando verificação (veja
+// docs/NOTICIAS_VERIFICACAO.md) e não aparecem na interface. Para exibir todos
+// (ex.: depuração), troque o filtro por `() => true`.
+const estaVerificada = (n) => n.verificada !== false;
+
 function obterListaBruta() {
-  if (Array.isArray(demonstracaoData)) return demonstracaoData;
-  if (demonstracaoData && Array.isArray(demonstracaoData.noticias)) return demonstracaoData.noticias;
+  if (Array.isArray(demonstracaoData)) return demonstracaoData.filter(estaVerificada);
+  if (demonstracaoData && Array.isArray(demonstracaoData.noticias)) {
+    return demonstracaoData.noticias.filter(estaVerificada);
+  }
   return [];
 }
 

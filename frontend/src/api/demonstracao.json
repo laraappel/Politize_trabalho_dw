@@ -1,23 +1,29 @@
 [
   {
     "id": 1,
-    "titulo": "Santa Catarina lidera Ranking Nacional de Competitividade dos Estados",
-    "resumo": "Notícia real sobre santa catarina lidera ranking nacional de competitividade dos estados em Santa Catarina.",
+    "titulo": "SC atinge o topo do Ranking de Competitividade dos Estados pela primeira vez",
+    "titulo_anterior": "Santa Catarina lidera Ranking Nacional de Competitividade dos Estados",
+    "resumo": "Santa Catarina assumiu a 1ª posição no Ranking de Competitividade dos Estados 2026, do Centro de Liderança Pública (CLP), superando São Paulo, que liderava havia 14 edições.",
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre santa catarina lidera ranking nacional de competitividade dos estados. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Governança",
-    "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-1"
+    "fonte": "NSC Total",
+    "data_publicacao": "2026-08-27T15:00:00Z",
+    "data_precisao": "dia",
+    "url_original": "https://www.nsctotal.com.br/economia/sc-atinge-o-topo-do-ranking-de-competitividade-dos-estados-pela-primeira-vez",
+    "verificada": true
   },
   {
     "id": 2,
-    "titulo": "Jorginho Mello é reeleito governador de SC em primeiro turno",
-    "resumo": "Notícia real sobre jorginho mello é reeleito governador de sc em primeiro turno em Santa Catarina.",
+    "titulo": "Jorginho Mello é reeleito governador de Santa Catarina",
+    "titulo_anterior": "Jorginho Mello é reeleito governador de SC em primeiro turno",
+    "resumo": "Jorginho Mello (PL) foi reeleito governador de Santa Catarina já no primeiro turno das eleições de 4 de outubro de 2026, com mais de 50% dos votos válidos.",
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre jorginho mello é reeleito governador de sc em primeiro turno. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Governança",
-    "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-28T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-2"
+    "fonte": "SBT News",
+    "data_publicacao": "2026-10-04T22:19:31Z",
+    "data_precisao": "hora",
+    "url_original": "https://sbtnews.sbt.com.br/noticia/eleicoes/jorginho-mello-e-reeleito-governador-de-santa-catarina",
+    "verificada": true
   },
   {
     "id": 3,
@@ -26,8 +32,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre programa estrada boa destina r$ 210 milhões para rodovias da grande florianópolis. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Infraestrutura",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-3"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 4,
@@ -36,8 +43,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre programa voa+sc realiza voo inaugural ligando florianópolis a joinville. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Infraestrutura",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-30T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-4"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 5,
@@ -46,8 +54,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre ampliação do voa+sc: iniciada a venda de passagens para novas rotas regionais. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Infraestrutura",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-5"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 6,
@@ -56,8 +65,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre porto de são francisco do sul apresenta plano de r$ 558 milhões em investimentos. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Infraestrutura",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-25T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-6"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 7,
@@ -66,8 +76,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre sine de santa catarina oferta mais de 9,7 mil vagas abertas de trabalho. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-04T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-7"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 8,
@@ -76,8 +87,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre santa catarina atinge saldo de 41,5 mil novos postos formais no ano. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-8"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 9,
@@ -86,8 +98,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre casan apresenta planos de investimentos no congresso de municípios (comac 2026). A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Infraestrutura",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-05T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-9"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 10,
@@ -96,8 +109,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre abertas inscrições para certificação de administradores de empresas públicas de sc. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Governança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-29T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-10"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 11,
@@ -106,8 +120,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre assinada ordem de serviço de r$ 162,8 milhões para a barragem de botuverá. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Infraestrutura",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-11"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 12,
@@ -116,8 +131,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre projetos de governança da alesc ganham premiação internacional no méxico. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Governança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-12"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 13,
@@ -126,8 +142,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre tce-sc define transferência da relatoria ambiental a partir de 2027. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Governança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-27T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-13"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 14,
@@ -136,8 +153,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre governo avança em estudos para concessão de rodovias estaduais na serra e litoral. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Infraestrutura",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-04T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-14"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 15,
@@ -146,8 +164,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre comac 2026 reúne prefeitos para debater reforma tributária e saneamento básico. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Governança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-05T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-15"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 16,
@@ -156,8 +175,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre secretaria da agricultura amplia cobertura do sistema antigranizo no planalto serrano. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Infraestrutura",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-31T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-16"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 17,
@@ -166,8 +186,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre scti lança programa estadual de fomento e retenção de talentos em tecnologia. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Governança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-17"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 18,
@@ -176,8 +197,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre governo entrega 18 novas viaturas e 800 pistolas para a polícia penal de sc. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Segurança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-18"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 19,
@@ -186,8 +208,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre programa lar legal entrega 300 escrituras de regularização fundiária no meio-oeste. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Governança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-26T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-19"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 20,
@@ -196,8 +219,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre controladoria-geral de sc renova membros do conselho de transparência. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Governança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-20"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 21,
@@ -206,48 +230,61 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre governador vistoria estragos causados por temporais no oeste catarinense. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Defesa Civil",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-21"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 22,
-    "titulo": "Defesa Civil envia 56 mil itens de ajuda humanitária a 109 municípios afetados",
-    "resumo": "Notícia real sobre defesa civil envia 56 mil itens de ajuda humanitária a 109 municípios afetados em Santa Catarina.",
+    "titulo": "Defesa Civil distribui mais de 56 mil itens após temporais atingirem 109 cidades e deixarem duas mortes em SC",
+    "titulo_anterior": "Defesa Civil envia 56 mil itens de ajuda humanitária a 109 municípios afetados",
+    "resumo": "A Defesa Civil de SC distribui mais de 56 mil itens (telhas, cumeeiras, cestas básicas, colchões e kits) após temporais que atingem o estado desde 1º de novembro; 5.531 residências foram afetadas.",
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre defesa civil envia 56 mil itens de ajuda humanitária a 109 municípios afetados. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Defesa Civil",
-    "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-22"
+    "fonte": "ND Mais",
+    "data_publicacao": "2026-11-05T15:00:00Z",
+    "data_precisao": "dia",
+    "url_original": "https://ndmais.com.br/tempo/defesa-civil-distribui-mais-de-56-mil-itens-apos-temporais-atingirem-109-cidades-e-deixarem-duas-mortes-em-sc/",
+    "verificada": true
   },
   {
     "id": 23,
-    "titulo": "Trinta e dois municípios de SC decretam situação de emergência após tempestades",
-    "resumo": "Notícia real sobre trinta e dois municípios de sc decretam situação de emergência após tempestades em Santa Catarina.",
+    "titulo": "Temporais deixam rastro de destruição em 109 cidades e 32 municípios decretam emergência em SC",
+    "titulo_anterior": "Trinta e dois municípios de SC decretam situação de emergência após tempestades",
+    "resumo": "Balanço de 5 de novembro: 109 municípios com estragos, mais de 5,5 mil residências afetadas, duas mortes e 32 cidades em situação de emergência.",
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre trinta e dois municípios de sc decretam situação de emergência após tempestades. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Defesa Civil",
-    "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-23"
+    "fonte": "ND Mais",
+    "data_publicacao": "2026-11-05T15:00:00Z",
+    "data_precisao": "dia",
+    "url_original": "https://ndmais.com.br/tempo/temporais-deixam-rastro-de-destruicao-em-109-cidades-e-32-municipios-decretam-emergencia-em-sc/",
+    "verificada": true
   },
   {
     "id": 24,
-    "titulo": "Corpo de Bombeiros atende 670 ocorrências durante temporais recentes",
-    "resumo": "Notícia real sobre corpo de bombeiros atende 670 ocorrências durante temporais recentes em Santa Catarina.",
+    "titulo": "CBMSC atende mais de 670 ocorrências em 76 municípios catarinenses atingidos por fortes temporais",
+    "titulo_anterior": "Corpo de Bombeiros atende 670 ocorrências durante temporais recentes",
+    "resumo": "O Corpo de Bombeiros Militar atendeu 671 ocorrências em 76 municípios entre quarta (4) e a madrugada de quinta (5), com os 17 Grupos de Resposta a Desastres em sobreaviso.",
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre corpo de bombeiros atende 670 ocorrências durante temporais recentes. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Defesa Civil",
-    "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-24"
+    "fonte": "Folha Metropolitana",
+    "data_publicacao": "2026-11-05T15:00:00Z",
+    "data_precisao": "dia",
+    "url_original": "https://folhametropolitana.com/cbmsc-atende-mais-de-670-ocorrencias-em-76-municipios-catarinenses-atingidos-por-fortes-temporais/",
+    "verificada": true
   },
   {
     "id": 25,
-    "titulo": "Celesc mobiliza 17 equipes de emergência para restabelecer energia no Oeste",
-    "resumo": "Notícia real sobre celesc mobiliza 17 equipes de emergência para restabelecer energia no oeste em Santa Catarina.",
+    "titulo": "Celesc mobiliza 17 equipes de outras regiões para acelerar recuperação da energia no Oeste de SC",
+    "titulo_anterior": "Celesc mobiliza 17 equipes de emergência para restabelecer energia no Oeste",
+    "resumo": "A Celesc deslocou 17 equipes de sete regionais para o Oeste, onde o pico chegou a mais de 247 mil unidades consumidoras sem energia na quarta-feira (4).",
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre celesc mobiliza 17 equipes de emergência para restabelecer energia no oeste. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Defesa Civil",
-    "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-25"
+    "fonte": "NoPonto SC",
+    "data_publicacao": "2026-11-05T15:00:00Z",
+    "data_precisao": "dia",
+    "url_original": "https://nopontosc.com.br/2026/11/05/celesc-mobiliza-17-equipes-de-outras-regioes-para-acelerar-recuperacao-da-energia-no-oeste-de-sc/",
+    "verificada": true
   },
   {
     "id": 26,
@@ -256,8 +293,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre polícia civil desarticula quadrilha de furto de cabos de telecomunicação em 50 cidades. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Segurança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-29T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-26"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 27,
@@ -266,8 +304,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre mpsc lança marco zero de enfrentamento ao feminicídio em balneário camboriú. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Justiça",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-04T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-27"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 28,
@@ -276,8 +315,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre operação de prevenção monitora 1,6 mil propriedades rurais contra doença de newcastle. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Defesa Civil",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-28T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-28"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 29,
@@ -286,8 +326,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre santa catarina mantém 1ª colocação nacional no pilar de segurança pública. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Segurança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-29"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 30,
@@ -296,8 +337,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre polícia federal realiza apreensão de valores em espécie em florianópolis. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Segurança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-27T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-30"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 31,
@@ -306,8 +348,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre sc registra 7,7 homicídios por 100 mil hab. e reafirma menor taxa do país. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Segurança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-31"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 32,
@@ -316,8 +359,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre poder judiciário de sc pauta mais de 110 júris populares no mês de novembro. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Justiça",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-32"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 33,
@@ -326,8 +370,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre pf cumpre mandado de prisão por armazenamento de material ilícito em palhoça. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Segurança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-31T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-33"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 34,
@@ -336,8 +381,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre polícia civil cumpre mandados contra fraude em empréstimos com garantia imobiliária. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Segurança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-04T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-34"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 35,
@@ -346,8 +392,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre estado instala novos radares meteorológicos e sensores de rio no vale do itajaí. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Defesa Civil",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-05T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-35"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 36,
@@ -356,8 +403,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre sap/sc instala raio-x e monitoramento inteligente em penitenciárias do norte e sul. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Segurança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-30T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-36"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 37,
@@ -366,8 +414,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre pmsc expande patrulha maria da penha para atendimento especializado no sul de sc. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Segurança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-37"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 38,
@@ -376,8 +425,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre operação integrada apreende cargas de entorpecentes em balneário camboriú e itajaí. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Segurança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-38"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 39,
@@ -386,8 +436,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre polícia científica adquire novos equipamentos para exames toxicológicos e dna. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Segurança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-28T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-39"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 40,
@@ -396,8 +447,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre governo autoriza edital de convocação para curso de formação de praças da pm. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Segurança",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-40"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 41,
@@ -406,8 +458,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre santa catarina consolida ampliação na taxa de doadores e lidera doação de órgãos. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-28T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-41"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 42,
@@ -416,8 +469,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre samu/sc comemora 21 anos com mais de 2 milhões de atendimentos prestados. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-42"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 43,
@@ -426,8 +480,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre secretaria da saúde reforça repasses estaduais para a atenção primária nos municípios. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-43"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 44,
@@ -436,8 +491,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre estado expande protocolo de transfusão de sangue total para a região de lages. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-30T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-44"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 45,
@@ -446,8 +502,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre inaugurada revitalização da enfermaria feminina no instituto de psiquiatria de sc. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-04T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-45"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 46,
@@ -456,8 +513,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre sc amplia oferta da vacina pneumo 20 para idosos acima de 85 anos no sus. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-46"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 47,
@@ -466,8 +524,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre estado aumenta incentivo financeiro para cirurgias de reconstrução mamária pós-câncer. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-29T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-47"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 48,
@@ -476,8 +535,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre prefeitura de itapema apresenta ao estado demandas de apoio para postos e upas. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-05T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-48"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 49,
@@ -486,8 +546,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre conselho estadual dos direitos da pessoa com deficiência dá posse a novos membros. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Assistência Social",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-31T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-49"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 50,
@@ -496,8 +557,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre imetro-sc intensifica fiscalização de brinquedos e selos inmetro no comércio. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-27T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-50"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 51,
@@ -506,8 +568,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre comissão de saúde cobra regularização no fornecimento de bolsas para ostomizados. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-51"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 52,
@@ -516,8 +579,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre alesc aprova projetos sobre conscientização da neuromielite óptica e outubrinho rosa. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-52"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 53,
@@ -526,8 +590,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre seminário regional sobre fiscalização sanitária reúne gestores da serra em lages. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-30T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-53"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 54,
@@ -536,8 +601,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre rede feminina de combate ao câncer completa 40 anos com homenagem na alesc. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-04T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-54"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 55,
@@ -546,8 +612,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre estado libera recursos para abertura de leitos oncológicos no hospital joana de gusmão. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-55"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 56,
@@ -556,8 +623,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre reforço no suporte cirúrgico pediátrico nos hospitais regionais de chapecó e joinville. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-28T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-56"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 57,
@@ -566,8 +634,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre plataforma catarinense de telemedicina ultrapassa 500 mil telediagnósticos. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-05T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-57"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 58,
@@ -576,8 +645,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre secretaria da saúde envia kits de testes rápidos de dengue para municípios em alerta. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-58"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 59,
@@ -586,8 +656,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre hemosc lança campanha de coleta itinerante para reforçar estoques de sangue negativo. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-59"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 60,
@@ -596,8 +667,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre secretaria publica diretrizes sobre o uso consciente dos prontos-socorros municipais. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Saúde",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-31T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-60"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 61,
@@ -606,8 +678,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre secretaria da educação prorroga inscrições para o concurso de remoção de professores. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Educação",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-61"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 62,
@@ -616,8 +689,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre estendidos os prazos para avaliação da fluência leitora e transferência escolar. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Educação",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-62"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 63,
@@ -626,8 +700,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre cedups de sc abrem vagas gratuitas em técnico integrado em agropecuária. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Educação",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-04T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-63"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 64,
@@ -636,8 +711,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre udesc cefid abre inscrições para mestrado e doutorado em fisioterapia. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Educação",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-29T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-64"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 65,
@@ -646,8 +722,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre alesc aprova proposta de descompactação salarial e valorização dos professores. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Educação",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-65"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 66,
@@ -656,8 +733,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre ima lança 1ª edição de revista científica com dados de 4,4 mil espécies monitoradas. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Meio Ambiente",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-05T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-66"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 67,
@@ -666,8 +744,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre scti participa do comac apresentando incentivos ao ecossistema de startups. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Educação",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-05T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-67"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 68,
@@ -676,8 +755,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre fundação catarinense de cultura realiza oficina itinerante de acervos em timbó. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Cultura",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-30T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-68"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 69,
@@ -686,8 +766,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre programa reabilitacão capacita detentos em banho e tosa no sistema prisional. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Cultura",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-69"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 70,
@@ -696,8 +777,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre mais de 13 mil apenados se inscrevem no encceja ppl em santa catarina. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Educação",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-28T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-70"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 71,
@@ -706,8 +788,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre programa alesc menos lixo alcança 1,5 tonelada de resíduos reciclados. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Meio Ambiente",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-04T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-71"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 72,
@@ -716,8 +799,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre seminário em urubici discute saúde emocional e bem-estar dos professores públicas. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Educação",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-72"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 73,
@@ -726,8 +810,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre livro sobre vivências e inclusão do autismo nas escolas é lançado na alesc. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Educação",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-31T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-73"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 74,
@@ -736,8 +821,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre ima divulga relatório de balneabilidade analisando 238 pontos nas praias de sc. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Meio Ambiente",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-05T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-74"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 75,
@@ -746,8 +832,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre projeto aprovado na alesc incentiva a leitura de autores catarinenses nas escolas. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Cultura",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-75"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 76,
@@ -756,8 +843,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre inscrições abertas para cursos técnicos gratuitos de agronegócio nos cedups estaduais. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Educação",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-76"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 77,
@@ -766,8 +854,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre ima faz cercamento de restingas e proteção de dunas no parque do rio vermelho. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Meio Ambiente",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-30T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-77"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 78,
@@ -776,8 +865,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre fcc conclui restauração de prédios históricos em laguna e são francisco do sul. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Cultura",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-04T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-78"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 79,
@@ -786,8 +876,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre estudantes da rede estadual conquistam prêmios em feiras nacionais de ciências. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Educação",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-29T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-79"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 80,
@@ -796,8 +887,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre secretaria da educação conclui reformas de quadras esportivas em 25 escolas. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Educação",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-80"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 81,
@@ -806,8 +898,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre jogos abertos de santa catarina (jasc) começam com disputas de surfe e atletismo. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Esportes",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-04T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-81"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 82,
@@ -816,8 +909,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre olimpíadas estudantis (olesc) reúnem quase 6 mil atletas jovens em lages. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Esportes",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-82"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 83,
@@ -826,8 +920,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre santa catarina se consolida como polo global após sediar o mundial de beach tennis. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Esportes",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-28T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-83"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 84,
@@ -836,8 +931,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre grande final do festival santa catarina canta reúne 21 finalistas em florianópolis. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Turismo",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-84"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 85,
@@ -846,8 +942,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre bombinhas conquista selo bandeira azul para cinco praias na temporada 2026/2027. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Turismo",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-85"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 86,
@@ -856,8 +953,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre projeto sc rural 2 abre cadastramento de apoio financeiro para pequenos agricultores. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-30T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-86"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 87,
@@ -866,8 +964,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre delegação da província chinesa de heilongjiang visita sc para parcerias em tecnologia. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-05T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-87"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 88,
@@ -876,8 +975,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre avançam as obras da nova roda-gigante de 60 metros na orla de itapema. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Turismo",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-88"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 89,
@@ -886,8 +986,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre conasa expande rede de esgoto visando atingir 95% de cobertura em itapema. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-29T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-89"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 90,
@@ -896,8 +997,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre celesc inaugura eletroposto de recarga rápida de veículos no litoral norte. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-04T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-90"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 91,
@@ -906,8 +1008,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre fiesc organiza missão empresarial com indústrias catarinenses no paraguai. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-91"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 92,
@@ -916,8 +1019,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre catarinenses criam 7 mil novos postos de trabalho formal no último mês. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-31T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-92"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 93,
@@ -926,8 +1030,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre alesc reconhece balneário camboriú como a capital catarinense do beach tennis. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Esportes",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-93"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 94,
@@ -936,8 +1041,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre alesc debate apoio aos avicultores diante do monitoramento sanitário no estado. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-05T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-94"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 95,
@@ -946,8 +1052,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre deputados solicitam apoio emergencial aos produtores de banana no vale do itapocu. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-04T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-95"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 96,
@@ -956,8 +1063,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre natal de joinville confirma 180 artistas no espetáculo oficial de abertura. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Turismo",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-03T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-96"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 97,
@@ -966,8 +1074,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre porto de imbituba bate recorde na movimentação de contêineres e cargas agrícolas. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-30T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-97"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 98,
@@ -976,8 +1085,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre polo metalmecânico do norte de sc registra alta nas exportações de compressores. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-01T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-98"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 99,
@@ -986,8 +1096,9 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre balneário camboriú e itajaí confirmam 40 cruzeiros na temporada 2026/2027. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Turismo",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-11-02T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-99"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   },
   {
     "id": 100,
@@ -996,7 +1107,8 @@
     "conteudo": "Acompanhe os detalhes e desdobramentos sobre sc reafirma liderança nacional nas exportações de carne suína e avícola. A medida e acoes foram registradas nos orgaos oficiais de Santa Catarina.",
     "categoria": "Economia",
     "fonte": "Agência de Notícias de SC / Secom SC",
-    "data_publicacao": "2026-10-28T10:00:00Z",
-    "url_original": "https://estado.sc.gov.br/noticias/item-100"
+    "data_publicacao": null,
+    "url_original": null,
+    "verificada": false
   }
 ]
