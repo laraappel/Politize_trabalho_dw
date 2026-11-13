@@ -25,17 +25,9 @@ function slugify(texto) {
     .replace(/^-|-$/g, "") || "sem-nome";
 }
 
-// Só exibe notícias com link direto e data de publicação confirmados.
-// Itens com `verificada: false` ficam no JSON aguardando verificação (veja
-// docs/NOTICIAS_VERIFICACAO.md) e não aparecem na interface. Para exibir todos
-// (ex.: depuração), troque o filtro por `() => true`.
-const estaVerificada = (n) => n.verificada !== false;
-
 function obterListaBruta() {
-  if (Array.isArray(demonstracaoData)) return demonstracaoData.filter(estaVerificada);
-  if (demonstracaoData && Array.isArray(demonstracaoData.noticias)) {
-    return demonstracaoData.noticias.filter(estaVerificada);
-  }
+  if (Array.isArray(demonstracaoData)) return demonstracaoData;
+  if (demonstracaoData && Array.isArray(demonstracaoData.noticias)) return demonstracaoData.noticias;
   return [];
 }
 
@@ -88,8 +80,24 @@ function obterLista() {
 
 export async function listarNoticias(params = {}) {
   let lista = obterLista();
-  const page = Number(params.page) || 1;
-  const per_page = Number(params.per_page) || 10;
+  const page = Math.max(1, Number(params.page) || 1);
+  const per_page = Math.min(100, Math.max(1, Number(params.per_page) || 10));
+
+  if (params.q) {
+    const termo = String(params.q).trim().toLocaleLowerCase("pt-BR");
+    if (termo) {
+      lista = lista.filter((n) => {
+        const texto = [
+          n.titulo_original,
+          n.resumo,
+          n.assunto?.nome,
+          n.veiculo?.nome,
+          ...n.politicos.map((p) => p.nome),
+        ].filter(Boolean).join(" ").toLocaleLowerCase("pt-BR");
+        return texto.includes(termo);
+      });
+    }
+  }
 
   if (params.politico) {
     lista = lista.filter((n) =>
@@ -113,13 +121,18 @@ export async function listarNoticias(params = {}) {
     lista = lista.filter((n) => n.natureza.codigo === params.natureza);
   }
   if (params.de) {
-    const de = new Date(params.de);
-    lista = lista.filter((n) => n.publicado_em && new Date(n.publicado_em) >= de);
+    lista = lista.filter((n) => {
+      if (!n.publicado_em) return false;
+      const data = new Date(n.publicado_em);
+      return !Number.isNaN(data.getTime()) && data.toISOString().slice(0, 10) >= params.de;
+    });
   }
   if (params.ate) {
-    const ate = new Date(params.ate);
-    ate.setHours(23, 59, 59, 999);
-    lista = lista.filter((n) => n.publicado_em && new Date(n.publicado_em) <= ate);
+    lista = lista.filter((n) => {
+      if (!n.publicado_em) return false;
+      const data = new Date(n.publicado_em);
+      return !Number.isNaN(data.getTime()) && data.toISOString().slice(0, 10) <= params.ate;
+    });
   }
 
   const ordem = params.ordem === "antigas" ? 1 : -1;
@@ -131,10 +144,11 @@ export async function listarNoticias(params = {}) {
 
   const total = lista.length;
   const pages = Math.ceil(total / per_page) || 1;
-  const start = (page - 1) * per_page;
+  const paginaValida = Math.min(page, pages);
+  const start = (paginaValida - 1) * per_page;
   const items = lista.slice(start, start + per_page);
 
-  return { items, total, page, pages };
+  return { items, total, page: paginaValida, pages };
 }
 
 export async function listarNoticiasDoPolitico(politicoId, params = {}) {

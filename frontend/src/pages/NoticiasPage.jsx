@@ -4,7 +4,7 @@ import { listarNoticias, listarVeiculos, obterFiltrosNoticias } from "../api/not
 import NoticiaCard from "../components/NoticiaCard";
 
 const PER_PAGE = 10;
-const CHAVES = ["politico", "veiculo", "assunto", "natureza", "de", "ate", "ordem"];
+const CHAVES = ["q", "politico", "veiculo", "assunto", "natureza", "de", "ate", "ordem"];
 
 function NoticiasPage() {
   const [params, setParams] = useSearchParams();
@@ -68,10 +68,19 @@ function NoticiasPage() {
       </div>
 
       <form className="noticias-filtros" onSubmit={(e) => e.preventDefault()} aria-label="Filtros de notícias">
+        <label className="noticias-filtro-busca">
+          Buscar notícia
+          <input
+            type="search"
+            value={filtros.q}
+            onChange={aoMudar("q")}
+            placeholder="Digite título, assunto ou fonte..."
+          />
+        </label>
         <label>
           Político
-          <select value={filtros.politico} onChange={aoMudar("politico")}>
-            <option value="">Todos</option>
+          <select value={filtros.politico} onChange={aoMudar("politico")} disabled={opcoes.politicos.length === 0}>
+            <option value="">{opcoes.politicos.length ? "Todos" : "Sem vínculos cadastrados"}</option>
             {opcoes.politicos.map((p) => (
               <option key={p.id} value={p.id}>{p.nome}</option>
             ))}
@@ -125,6 +134,9 @@ function NoticiasPage() {
           </button>
         )}
       </form>
+      {!erroFiltros && opcoes.politicos.length === 0 && (
+        <p className="noticias-filtro-aviso">O filtro por político ficará disponível quando as notícias tiverem vínculos revisados com políticos cadastrados.</p>
+      )}
       {erroFiltros && <p role="alert" className="status-error">Não foi possível carregar as opções de filtro: {erroFiltros}</p>}
       {erroFontes && <p role="alert" className="status-error">Não foi possível carregar as fontes: {erroFontes}</p>}
 
