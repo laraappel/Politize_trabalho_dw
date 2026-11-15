@@ -13,11 +13,13 @@ class Mandato(db.Model):
     municipio = db.Column(db.String(120))
     partido = db.Column(db.String(20))
     legislatura = db.Column(db.String(40))
+    id_legislatura = db.Column(db.Integer)
     inicio = db.Column(db.Date, nullable=False)
     fim = db.Column(db.Date)
     origem_dados = db.Column(db.String(20), nullable=False, default="demonstracao")
     fonte_nome = db.Column(db.String(200))
     fonte_url = db.Column(db.Text)
+    atualizado_em = db.Column(db.DateTime(timezone=True))
 
     politico = db.relationship("Politico", back_populates="mandatos")
 
@@ -28,6 +30,8 @@ class Projeto(db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
     politico_id = db.Column(db.BigInteger, db.ForeignKey("politicos.id", ondelete="CASCADE"), nullable=False)
     casa = db.Column(db.String(30), nullable=False)
+    sigla_tipo = db.Column(db.String(20))
+    id_camara = db.Column(db.Integer)
     numero = db.Column(db.Integer)
     ano = db.Column(db.Integer)
     ementa = db.Column(db.Text)
@@ -37,6 +41,7 @@ class Projeto(db.Model):
     origem_dados = db.Column(db.String(20), nullable=False, default="demonstracao")
     fonte_nome = db.Column(db.String(200))
     fonte_url = db.Column(db.Text)
+    atualizado_em = db.Column(db.DateTime(timezone=True))
 
     politico = db.relationship("Politico", back_populates="projetos")
     votacoes = db.relationship("Votacao", back_populates="projeto")
@@ -67,8 +72,9 @@ class Despesa(db.Model):
 
     id = db.Column(db.BigInteger, primary_key=True)
     politico_id = db.Column(db.BigInteger, db.ForeignKey("politicos.id", ondelete="CASCADE"), nullable=False)
-    categoria = db.Column(db.String(80), nullable=False)
+    categoria = db.Column(db.String(160), nullable=False)
     descricao = db.Column(db.Text, nullable=False)
+    id_documento_camara = db.Column(db.String(32))
     valor = db.Column(db.Numeric(14, 2))
     periodo_inicio = db.Column(db.Date, nullable=False)
     periodo_fim = db.Column(db.Date, nullable=False)
@@ -76,5 +82,6 @@ class Despesa(db.Model):
     origem_dados = db.Column(db.String(20), nullable=False, default="demonstracao")
     fonte_nome = db.Column(db.String(200))
     fonte_url = db.Column(db.Text)
+    atualizado_em = db.Column(db.DateTime(timezone=True))
 
     politico = db.relationship("Politico", back_populates="despesas")
