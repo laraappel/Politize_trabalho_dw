@@ -8,6 +8,7 @@ from datetime import date, datetime, time, timedelta, timezone
 from sqlalchemy import exists, func, select
 from sqlalchemy.orm import selectinload
 
+from app.errors import ErroValidacao
 from app.extensions import db
 from app.models.noticia import (
     Noticia,
@@ -21,12 +22,6 @@ from app.services.noticias.classificacao import AVISOS, NATUREZAS, ROTULOS
 BRT = timezone(timedelta(hours=-3))  # Brasil sem horário de verão desde 2019
 PER_PAGE_PADRAO, PER_PAGE_MAX = 10, 50
 GRAUS = {"alta": "Alta", "media": "Média", "baixa": "Baixa", "manual": "Revisão manual"}
-
-
-class ErroValidacao(Exception):
-    def __init__(self, codigo: str, mensagem: str, http: int = 400):
-        super().__init__(mensagem)
-        self.codigo, self.mensagem, self.http = codigo, mensagem, http
 
 
 @dataclass

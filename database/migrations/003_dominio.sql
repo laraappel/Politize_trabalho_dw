@@ -14,21 +14,23 @@ CREATE INDEX IF NOT EXISTS ix_politicos_nome ON politicos (nome_completo);
 CREATE INDEX IF NOT EXISTS ix_politicos_uf_partido ON politicos (uf, partido);
 
 CREATE TABLE IF NOT EXISTS mandatos (
-    id            BIGSERIAL PRIMARY KEY,
-    politico_id   BIGINT NOT NULL REFERENCES politicos(id) ON DELETE CASCADE,
-    cargo         VARCHAR(80) NOT NULL,
-    esfera        VARCHAR(20) NOT NULL
+    id              BIGSERIAL PRIMARY KEY,
+    politico_id     BIGINT NOT NULL REFERENCES politicos(id) ON DELETE CASCADE,
+    cargo           VARCHAR(80) NOT NULL,
+    esfera          VARCHAR(20) NOT NULL
         CHECK (esfera IN ('federal', 'estadual', 'municipal')),
-    uf            CHAR(2),
-    municipio     VARCHAR(120),
-    partido       VARCHAR(20),
-    legislatura   VARCHAR(40),
-    inicio        DATE NOT NULL,
-    fim           DATE,
-    origem_dados  VARCHAR(20) NOT NULL DEFAULT 'demonstracao'
+    uf              CHAR(2),
+    municipio       VARCHAR(120),
+    partido         VARCHAR(20),
+    legislatura     VARCHAR(40),
+    id_legislatura  INTEGER,
+    inicio          DATE NOT NULL,
+    fim             DATE,
+    origem_dados    VARCHAR(20) NOT NULL DEFAULT 'demonstracao'
         CHECK (origem_dados IN ('demonstracao', 'oficial')),
-    fonte_nome    VARCHAR(200),
-    fonte_url     TEXT,
+    fonte_nome      VARCHAR(200),
+    fonte_url       TEXT,
+    atualizado_em   TIMESTAMPTZ,
     UNIQUE (politico_id, cargo, inicio)
 );
 
@@ -38,6 +40,8 @@ CREATE TABLE IF NOT EXISTS projetos (
     id                 BIGSERIAL PRIMARY KEY,
     politico_id        BIGINT NOT NULL REFERENCES politicos(id) ON DELETE CASCADE,
     casa               VARCHAR(30) NOT NULL,
+    sigla_tipo         VARCHAR(20),
+    id_camara          INTEGER,
     numero             INTEGER,
     ano                INTEGER,
     ementa             TEXT,
@@ -48,6 +52,7 @@ CREATE TABLE IF NOT EXISTS projetos (
         CHECK (origem_dados IN ('demonstracao', 'oficial')),
     fonte_nome         VARCHAR(200),
     fonte_url          TEXT,
+    atualizado_em      TIMESTAMPTZ,
     UNIQUE (casa, numero, ano)
 );
 
@@ -73,18 +78,20 @@ CREATE TABLE IF NOT EXISTS votacoes (
 CREATE INDEX IF NOT EXISTS ix_votacoes_politico ON votacoes (politico_id, data_votacao DESC);
 
 CREATE TABLE IF NOT EXISTS despesas (
-    id              BIGSERIAL PRIMARY KEY,
-    politico_id     BIGINT NOT NULL REFERENCES politicos(id) ON DELETE CASCADE,
-    categoria       VARCHAR(80) NOT NULL,
-    descricao       TEXT NOT NULL,
-    valor           NUMERIC(14, 2),
-    periodo_inicio  DATE NOT NULL,
-    periodo_fim     DATE NOT NULL,
-    esfera          VARCHAR(20),
-    origem_dados    VARCHAR(20) NOT NULL DEFAULT 'demonstracao'
+    id                  BIGSERIAL PRIMARY KEY,
+    politico_id         BIGINT NOT NULL REFERENCES politicos(id) ON DELETE CASCADE,
+    categoria           VARCHAR(80) NOT NULL,
+    descricao           TEXT NOT NULL,
+    id_documento_camara VARCHAR(32),
+    valor               NUMERIC(14, 2),
+    periodo_inicio      DATE NOT NULL,
+    periodo_fim         DATE NOT NULL,
+    esfera              VARCHAR(20),
+    origem_dados        VARCHAR(20) NOT NULL DEFAULT 'demonstracao'
         CHECK (origem_dados IN ('demonstracao', 'oficial')),
-    fonte_nome      VARCHAR(200),
-    fonte_url       TEXT,
+    fonte_nome          VARCHAR(200),
+    fonte_url           TEXT,
+    atualizado_em       TIMESTAMPTZ,
     UNIQUE (politico_id, categoria, periodo_inicio, periodo_fim, descricao)
 );
 
