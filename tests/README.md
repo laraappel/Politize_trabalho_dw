@@ -1,23 +1,20 @@
 # Testes
 
-Nesta etapa existem testes de integração da API, em `tests/integration/`.
+Os testes de integração assumem que a stack Docker está em execução e usa PostgreSQL migrado.
 
-Eles assumem que o backend já está no ar (`docker compose up`).
+Execute todos os testes no container backend:
 
-Na máquina host:
-
-```bash
-pip install requests pytest
-pytest tests/integration/test_health.py
+```powershell
+docker compose exec -T backend pytest -c /app/pytest.ini /tests -q
 ```
 
-Variável opcional:
+O `-c /app/pytest.ini` carrega configuração e caminho de importação Python do container; sem ele, o pytest iniciado apontando para `/tests` não encontra o pacote `app`.
 
-```bash
-set API_URL=http://localhost:5000
+Para executar somente os testes HTTP a partir do host, instale `pytest` e `requests` e configure:
+
+```powershell
+$env:API_URL = "http://localhost:5000"
+pytest tests/integration/test_health.py -q
 ```
 
-## Notícias
-
-- `tests/unit/`: regras puras (associação, classificação, RSS). Rode com `PYTHONPATH=backend pytest tests/unit`.
-- `tests/integration/test_noticias_db.py`: fluxo completo contra um PostgreSQL migrado (`DATABASE_URL`). Usa apenas dados sintéticos e limpa o que cria.
+`tests/unit/` cobre regras sem banco. Os testes de integração de domínio e notícias usam dados sintéticos e limpam os registros criados.

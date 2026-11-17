@@ -87,6 +87,6 @@ Operações editoriais exigem o cabeçalho `X-Admin-Token` igual a `ADMIN_TOKEN`
 
 ## Limitações conhecidas
 
-- **Dependência do módulo de políticos.** Ele ainda não existe no repositório; a migração cria uma tabela `politicos` mínima (`IF NOT EXISTS`). Nenhum político foi cadastrado, então a página `/noticias` fica vazia até haver cadastro. Se o módulo de políticos mudar o schema, adapte `services/noticias/politicos_repo.py` e `models/noticia.py::PoliticoRef`.
+- Notícias compartilham a tabela `politicos` ativa; a migração `003_dominio.sql` a estende. O seed fictício é importado por padrão. Para fontes reais, mantenha associações revisáveis e origem rastreável.
 - O token administrativo é compartilhado e provisório; em produção use autenticação real.
 - Sem agendador, sem busca textual por palavra-chave e sem notificações.

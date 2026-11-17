@@ -1,8 +1,8 @@
 """Modelos do módulo de notícias. Tabelas definidas em database/migrations/002_noticias.sql."""
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB
-from sqlalchemy import Text
+from sqlalchemy.dialects.postgresql import JSONB
 
 from app.extensions import db
+<<<<<<< HEAD
 
 
 class PoliticoRef(db.Model):
@@ -31,6 +31,9 @@ class PoliticoRef(db.Model):
     @property
     def nome_exibicao(self):
         return self.nome_urna or self.nome_completo
+=======
+from app.models.politico import Politico as PoliticoRef  # noqa: F401
+>>>>>>> 5ebe20d0034f953c5898dc87e9dc700a437290e5
 
 
 class Veiculo(db.Model):
@@ -98,7 +101,7 @@ class NoticiaPolitico(db.Model):
     criado_em = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
 
     noticia = db.relationship("Noticia", back_populates="associacoes")
-    politico = db.relationship("PoliticoRef")
+    politico = db.relationship("Politico")
 
 
 class NoticiaAtualizacao(db.Model):
