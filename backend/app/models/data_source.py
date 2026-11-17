@@ -30,7 +30,7 @@ class DataSource(TimestampMixin, db.Model):
         server_default=db.text("false"),
     )
 
-    sync_logs = relationship("DataSyncLog", back_populates="data_source")
+    sync_logs = relationship("DataSourceSyncLog", back_populates="data_source")
 
     def to_dict(self):
         return {
@@ -49,7 +49,7 @@ class DataSource(TimestampMixin, db.Model):
         return {"id": self.id, "code": self.code, "name": self.name}
 
 
-class DataSyncLog(db.Model):
+class DataSourceSyncLog(db.Model):
     __tablename__ = "data_sync_logs"
     __table_args__ = (
         db.Index("ix_data_sync_logs_source_started", "data_source_id", "started_at"),

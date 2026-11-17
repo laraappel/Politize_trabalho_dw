@@ -2,38 +2,7 @@
 from sqlalchemy.dialects.postgresql import JSONB
 
 from app.extensions import db
-<<<<<<< HEAD
-
-
-class PoliticoRef(db.Model):
-    """Visão mínima de `politicos`, usada apenas para vincular notícias.
-
-    O módulo de políticos pode substituir/estender este modelo; o módulo de
-    notícias só lê id, nomes, cargo, partido e identificadores oficiais.
-    """
-
-    __tablename__ = "politicos"
-
-    id = db.Column(db.BigInteger, primary_key=True)
-    nome_completo = db.Column(db.String(200), nullable=False)
-    nome_urna = db.Column(db.String(200))
-    apelidos = db.Column(ARRAY(Text), nullable=False, default=list)
-    cargo = db.Column(db.String(80))
-    uf = db.Column(db.String(2))
-    partido = db.Column(db.String(20))
-    id_camara = db.Column(db.Integer, unique=True)
-    id_senado = db.Column(db.Integer, unique=True)
-    origem_dados = db.Column(db.String(80))
-    coletado_em = db.Column(db.DateTime(timezone=True))
-    atualizado_em = db.Column(db.DateTime(timezone=True))
-    dados_camara = db.Column(JSONB)
-
-    @property
-    def nome_exibicao(self):
-        return self.nome_urna or self.nome_completo
-=======
 from app.models.politico import Politico as PoliticoRef  # noqa: F401
->>>>>>> 5ebe20d0034f953c5898dc87e9dc700a437290e5
 
 
 class Veiculo(db.Model):

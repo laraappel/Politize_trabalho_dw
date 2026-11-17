@@ -60,7 +60,6 @@ def register_cli(app):
                 + (f" | {c.mensagem}" if c.mensagem else "")
             )
 
-<<<<<<< HEAD
     @app.cli.command("importar-camara-inicial")
     @click.option("--ano-inicial", type=int, default=lambda: date.today().year, show_default="ano atual", help="Primeiro ano de despesas e proposições a importar.")
     @click.option("--ano-final", type=int, default=lambda: date.today().year, show_default="ano atual", help="Último ano de despesas e proposições a importar.")
@@ -89,7 +88,7 @@ def register_cli(app):
                 click.echo(f"{entidade}: lidos={lidos} novos={novos} atualizados={atualizados}")
         except Exception as exc:
             raise click.ClickException(f"Atualização da Câmara falhou: {exc}") from exc
-=======
+
     @app.cli.command("importar-dados")
     @click.option("--arquivo", required=True, type=click.Path(exists=True, dir_okay=False))
     def importar_dados(arquivo):
@@ -105,4 +104,3 @@ def register_cli(app):
         )
         if resumo.get("aviso"):
             click.echo(resumo["aviso"])
->>>>>>> 5ebe20d0034f953c5898dc87e9dc700a437290e5
