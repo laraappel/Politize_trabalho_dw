@@ -1,6 +1,6 @@
 # Contrato da API
 
-Base local: `http://localhost:5000/api`. O frontend usa `VITE_API_URL` como origem e acrescenta `/api` nas chamadas. O backend permite as origens configuradas em `FRONTEND_ORIGIN` (lista separada por vírgulas).
+Base local no navegador: `http://localhost:5001/api`. O frontend usa `VITE_API_URL` como origem e acrescenta `/api` nas chamadas. Dentro do container o Flask escuta a porta `5000`. O backend permite as origens configuradas em `FRONTEND_ORIGIN` (lista separada por vírgulas).
 
 ## Formatos comuns
 

@@ -25,9 +25,9 @@ docker compose ps
 Acesse:
 
 - Aplicação: http://localhost:3000
-- Saúde da API e do banco: http://localhost:5000/api/health
+- Saúde da API e do banco: http://localhost:5001/api/health
 
-Se as portas padrão estiverem ocupadas, altere `FRONTEND_PORT`, `BACKEND_PORT` e `POSTGRES_PORT` no `.env`; atualize também `VITE_API_URL` para a porta do backend. O arquivo `.env` é local e não deve ser compartilhado ou commitado. Os valores de exemplo são apenas para desenvolvimento local.
+O exemplo publica o backend em `5001` e o PostgreSQL em `5433`. Dentro da rede Docker o Flask continua na porta `5000` e o Postgres na `5432`. `VITE_API_URL` precisa apontar para a porta que o navegador alcança (`http://localhost:5001`). Se alterar `BACKEND_PORT` ou `POSTGRES_PORT` no `.env`, atualize também `VITE_API_URL`. O arquivo `.env` é local e não deve ser compartilhado ou commitado. Os valores de exemplo são apenas para desenvolvimento local.
 
 Para parar a stack em primeiro plano, pressione `Ctrl+C`; em seguida, execute:
 
@@ -45,6 +45,7 @@ Esse comando preserva o volume do PostgreSQL. **`docker compose down -v` apaga o
 - Notícias com filtros, classificação contextual, links para as matérias e coleta manual de fontes autorizadas.
 - Colinha eleitoral privada armazenada apenas no `localStorage` do navegador.
 - Importação idempotente de pacotes JSON de demonstração ou oficiais.
+- Consulta dos dados importados da Câmara dos Deputados. A carga é manual e está descrita em `docs/CAMARA.md`.
 
 O conjunto importado por padrão é fictício e está identificado como demonstração. A importação oficial exige nome e URL HTTP(S) da fonte por registro. Não há sincronização eleitoral oficial automática.
 
@@ -69,25 +70,15 @@ O primeiro comando executa testes unitários e de integração contra o banco da
 
 ## Estrutura
 
-<<<<<<< HEAD
-```
-frontend/   aplicação React
-backend/    API Flask
-database/   scripts SQL
-docs/       documentação da equipe
-tests/      testes de integração
-```
-
-Leia `docs/CONVENCOES.md` antes de criar arquivos novos.
-
-Módulo de notícias: `docs/NOTICIAS.md`.
-
-Integração oficial com a Câmara dos Deputados: `docs/CAMARA.md` (comandos de carga inicial, atualização e rotas de consulta).
-=======
 - `frontend/`: interface React/Vite.
 - `backend/`: API Flask e regras de negócio.
 - `database/init/` e `database/migrations/`: esquema inicial e migrações SQL.
 - `database/seeds/`: conjunto fictício de demonstração.
 - `tests/`: testes unitários e de integração.
 - `docs/`: contratos e guias do projeto.
->>>>>>> 5ebe20d0034f953c5898dc87e9dc700a437290e5
+
+Leia `docs/CONVENCOES.md` antes de criar arquivos novos.
+
+Módulo de notícias: `docs/NOTICIAS.md`.
+
+Integração oficial com a Câmara dos Deputados: `docs/CAMARA.md` (comandos de carga inicial, atualização e rotas de consulta).

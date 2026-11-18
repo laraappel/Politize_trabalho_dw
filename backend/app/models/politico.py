@@ -1,6 +1,6 @@
 """Cadastro de políticos compartilhado por todos os módulos."""
-from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy import Text
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 
 from app.extensions import db
 
@@ -19,11 +19,13 @@ class Politico(db.Model):
     partido = db.Column(db.String(20))
     id_camara = db.Column(db.Integer, unique=True)
     id_senado = db.Column(db.Integer, unique=True)
-    origem_dados = db.Column(db.String(20), nullable=False, default="demonstracao")
+    origem_dados = db.Column(db.String(80), nullable=False, default="demonstracao")
     fonte_nome = db.Column(db.String(200))
     fonte_url = db.Column(db.Text)
     criado_em = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
     atualizado_em = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
+    coletado_em = db.Column(db.DateTime(timezone=True))
+    dados_camara = db.Column(JSONB)
 
     mandatos = db.relationship("Mandato", back_populates="politico", order_by="Mandato.inicio.desc()")
     projetos = db.relationship("Projeto", back_populates="politico", order_by="Projeto.data_apresentacao.desc()")

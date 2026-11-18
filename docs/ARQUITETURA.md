@@ -8,7 +8,7 @@ O Voto Transparente é uma aplicação web em três serviços:
 2. **backend**: API REST Flask, JSON, prefixo `/api`.
 3. **db**: PostgreSQL 16, persistido em volume Docker.
 
-O navegador fala com o frontend em `http://localhost:3000` e com a API em `http://localhost:5000`. O CORS do backend aceita apenas a origem definida em `FRONTEND_ORIGIN`.
+O navegador fala com o frontend em `http://localhost:3000` e com a API em `http://localhost:5001`. O CORS do backend aceita apenas a origem definida em `FRONTEND_ORIGIN`.
 
 Dentro da rede Docker, o backend acessa o banco pelo hostname `db`.
 

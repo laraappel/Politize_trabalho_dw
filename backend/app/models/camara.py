@@ -77,6 +77,8 @@ class ProposicaoCamara(db.Model):
 
 
 class DataSyncLog(db.Model):
+    """Auditoria das coletas da Câmara. Não reutiliza o log genérico de data_sources."""
+
     __tablename__ = "data_sync_logs"
     id = db.Column(db.BigInteger, primary_key=True)
     fonte = db.Column(db.String(80), nullable=False)

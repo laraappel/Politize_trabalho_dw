@@ -135,7 +135,7 @@ git push -u origin feat/frontend-filtros-politicos
 
 ## Comunicação frontend e backend
 
-- Base da API no navegador: `VITE_API_URL` (padrão `http://localhost:5000`).
+- Base da API no navegador: `VITE_API_URL` (padrão `http://localhost:5001`).
 - Prefixo: `/api`.
 - Lista paginada futura: `{ "items": [], "total": 0, "page": 1 }`.
 - Recurso único: objeto no raiz, sem envelope extra, salvo quando houver metadados.

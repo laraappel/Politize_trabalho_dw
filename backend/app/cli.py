@@ -13,6 +13,18 @@ def _dir_migracoes() -> Path:
     return Path(os.getenv("MIGRATIONS_DIR", "/database/migrations"))
 
 
+def _ordem_migracao(arquivo: Path):
+    """Ordena pelo prefixo numérico. 003_dominio antecede 003_camara."""
+    nome = arquivo.stem
+    prefixo = nome.split("_", 1)[0]
+    try:
+        numero = int(prefixo)
+    except ValueError:
+        numero = 10_000
+    desempate = 1 if nome == "003_camara" else 0
+    return (numero, desempate, nome)
+
+
 def register_cli(app):
     @app.cli.command("migrate")
     def migrate():
@@ -21,7 +33,7 @@ def register_cli(app):
         if not pasta.is_dir():
             raise click.ClickException(f"Pasta de migrações não encontrada: {pasta}")
         aplicadas = {r[0] for r in db.session.execute(text("SELECT version FROM schema_migrations"))}
-        for arquivo in sorted(pasta.glob("*.sql")):
+        for arquivo in sorted(pasta.glob("*.sql"), key=_ordem_migracao):
             versao = arquivo.stem
             if versao in aplicadas:
                 click.echo(f"= {versao} (já aplicada)")

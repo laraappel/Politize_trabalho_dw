@@ -2,9 +2,9 @@
 -- Não cria uma segunda tabela de políticos: complementa `politicos`, já usada
 -- pelo módulo de notícias, preservando os IDs locais e o id_camara oficial.
 
-ALTER TABLE politicos ADD COLUMN IF NOT EXISTS origem_dados VARCHAR(80);
+ALTER TABLE politicos ADD COLUMN IF NOT EXISTS origem_dados VARCHAR(80) DEFAULT 'demonstracao';
 ALTER TABLE politicos ADD COLUMN IF NOT EXISTS coletado_em TIMESTAMPTZ;
-ALTER TABLE politicos ADD COLUMN IF NOT EXISTS atualizado_em TIMESTAMPTZ;
+ALTER TABLE politicos ADD COLUMN IF NOT EXISTS atualizado_em TIMESTAMPTZ DEFAULT NOW();
 ALTER TABLE politicos ADD COLUMN IF NOT EXISTS dados_camara JSONB;
 CREATE UNIQUE INDEX IF NOT EXISTS uq_politicos_id_camara
     ON politicos (id_camara) WHERE id_camara IS NOT NULL;
