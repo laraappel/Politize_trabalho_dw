@@ -9,6 +9,7 @@ from app.models.dominio import Despesa, Mandato, Projeto, Votacao
 from app.models.politico import Politico
 from app.paginacao import data_iso, envelope, escapar_like, pagina
 from app.serializacao import dinheiro, iso, origem
+from app.services.despesas import listar_despesas_unificadas, resumo_financeiro
 
 
 def _texto(args, nome, maximo=80):
@@ -214,25 +215,44 @@ def detalhe(politico_id: int) -> dict | None:
             selectinload(Politico.mandatos),
             selectinload(Politico.projetos),
             selectinload(Politico.votacoes),
-            selectinload(Politico.despesas),
         )
     )
     if p is None:
         return None
+
     dados = serializar_resumo(p)
     dados["apelidos"] = list(p.apelidos or [])
     dados["mandatos"] = [serializar_mandato(m) for m in p.mandatos]
     dados["projetos"] = [serializar_projeto(pr) for pr in p.projetos]
     dados["votacoes"] = [serializar_votacao(v) for v in p.votacoes]
-    dados["despesas"] = [serializar_despesa(d) for d in p.despesas]
-    dados["resumo_financeiro"] = resumo_despesas(p.despesas)
+
+    despesas = listar_despesas_unificadas(politico_id=politico_id)
+    dados["despesas"] = despesas
+    dados["resumo_financeiro"] = resumo_financeiro(despesas)
     return dados
 
 
 def listar_relacionados(politico_id: int, args, tipo: str) -> dict:
     if obter(politico_id) is None:
-        raise ErroValidacao("nao_encontrado", "Político não encontrado.", 404)
+        raise ErroValidacao("nao_encontrado", "Pol?tico n?o encontrado.", 404)
+
     page, per_page = pagina(args)
+
+    if tipo == "despesas":
+        todas = listar_despesas_unificadas(
+            args=args,
+            politico_id=politico_id,
+        )
+        inicio = (page - 1) * per_page
+        itens = todas[inicio:inicio + per_page]
+        return envelope(
+            itens,
+            len(todas),
+            page,
+            per_page,
+            resumo_financeiro=resumo_financeiro(todas),
+        )
+
     if tipo == "mandatos":
         base = select(Mandato).where(Mandato.politico_id == politico_id)
         ordem = Mandato.inicio.desc()
@@ -245,26 +265,19 @@ def listar_relacionados(politico_id: int, args, tipo: str) -> dict:
         base = select(Votacao).where(Votacao.politico_id == politico_id)
         ordem = Votacao.data_votacao.desc().nulls_last()
         serial = serializar_votacao
-    elif tipo == "despesas":
-        base = select(Despesa).where(Despesa.politico_id == politico_id)
-        categoria = _texto(args, "categoria")
-        de, ate = data_iso(args, "de"), data_iso(args, "ate")
-        if categoria:
-            base = base.where(Despesa.categoria == categoria)
-        if de:
-            base = base.where(Despesa.periodo_fim >= de)
-        if ate:
-            base = base.where(Despesa.periodo_inicio <= ate)
-        if de and ate and de > ate:
-            raise ErroValidacao("parametro_invalido", "'de' não pode ser posterior a 'ate'.")
-        ordem = Despesa.periodo_inicio.desc()
-        serial = serializar_despesa
     else:
-        raise ErroValidacao("parametro_invalido", "Tipo de relação desconhecido.")
+        raise ErroValidacao("parametro_invalido", "Tipo de rela??o desconhecido.")
+
     total = db.session.scalar(select(func.count()).select_from(base.subquery()))
-    itens = db.session.scalars(base.order_by(ordem).limit(per_page).offset((page - 1) * per_page)).all()
-    extra = {}
-    if tipo == "despesas":
-        todas = db.session.scalars(base).all()
-        extra["resumo_financeiro"] = resumo_despesas(todas)
-    return envelope([serial(i) for i in itens], total, page, per_page, **extra)
+    itens = db.session.scalars(
+        base.order_by(ordem)
+        .limit(per_page)
+        .offset((page - 1) * per_page)
+    ).all()
+
+    return envelope(
+        [serial(item) for item in itens],
+        total,
+        page,
+        per_page,
+    )
