@@ -6,12 +6,8 @@ Scripts SQL e migrações do PostgreSQL.
 - `01_schema.sql` cria a tabela de controle `schema_migrations`.
 - `migrations/002_noticias.sql` cria o cadastro compartilhado mínimo de políticos e as tabelas de notícias.
 - `migrations/003_dominio.sql` estende políticos e cria mandatos, projetos, votações e despesas.
-- `migrations/003_camara.sql` complementa políticos e cria as tabelas da Câmara, inclusive `data_sync_logs`.
 - `migrations/004_integridade_dados.sql` valida proveniência oficial, períodos e identificadores.
-- `migrations/005_reconciliar_politicos.sql` alinha `origem_dados`, a coleta da Câmara e o tamanho de `despesas.categoria`.
-- `migrations/006_fontes_dados.sql` cria `data_sources`, `data_source_sync_logs` e `partidos`.
-- O comando `flask migrate` aplica os arquivos `*.sql` da pasta pelo prefixo numérico. Entre os dois arquivos `003`, `003_dominio` roda antes de `003_camara`.
-- Novas migrações devem usar um prefixo numérico sequencial; cada arquivo registra a própria versão em `schema_migrations`.
+- Novas migrações devem usar um prefixo numérico sequencial; o comando do backend registra cada migração aplicada.
 - Não altere scripts já aplicados em ambientes compartilhados; crie um arquivo novo.
 
 ## Importar dados

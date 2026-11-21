@@ -34,11 +34,50 @@ class MandatoCamara(db.Model):
     dados_origem = db.Column(JSONB)
 
 
+class HistoricoCamara(db.Model):
+    __tablename__ = "historicos_camara"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    politico_id = db.Column(
+        db.BigInteger,
+        db.ForeignKey("politicos.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    id_deputado_camara = db.Column(db.Integer, nullable=False)
+    id_legislatura = db.Column(db.Integer)
+    chave_origem = db.Column(db.String(180), nullable=False, unique=True)
+    nome = db.Column(db.Text)
+    nome_eleitoral = db.Column(db.Text)
+    sigla_partido = db.Column(db.String(30))
+    sigla_uf = db.Column(db.String(2))
+    email = db.Column(db.Text)
+    url_foto = db.Column(db.Text)
+    data_hora = db.Column(db.DateTime(timezone=True))
+    situacao = db.Column(db.Text)
+    condicao_eleitoral = db.Column(db.Text)
+    descricao_status = db.Column(db.Text)
+    uri_origem = db.Column(db.Text)
+    origem = db.Column(
+        db.String(80), nullable=False, default="camara_deputados"
+    )
+    coletado_em = db.Column(
+        db.DateTime(timezone=True),
+        nullable=False,
+        server_default=db.func.now(),
+    )
+    atualizado_em = db.Column(
+        db.DateTime(timezone=True),
+        nullable=False,
+        server_default=db.func.now(),
+    )
+    dados_origem = db.Column(JSONB)
+
+
 class DespesaCamara(db.Model):
     __tablename__ = "despesas_camara"
     id = db.Column(db.BigInteger, primary_key=True)
     id_deputado_camara = db.Column(db.Integer, nullable=False)
-    id_documento = db.Column(db.BigInteger)
+    id_documento = db.Column(db.Text)
     chave_origem = db.Column(db.String(180), nullable=False, unique=True)
     ano = db.Column(db.Integer)
     mes = db.Column(db.Integer)
@@ -77,8 +116,6 @@ class ProposicaoCamara(db.Model):
 
 
 class DataSyncLog(db.Model):
-    """Auditoria das coletas da Câmara. Não reutiliza o log genérico de data_sources."""
-
     __tablename__ = "data_sync_logs"
     id = db.Column(db.BigInteger, primary_key=True)
     fonte = db.Column(db.String(80), nullable=False)

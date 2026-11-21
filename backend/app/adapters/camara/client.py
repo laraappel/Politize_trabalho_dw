@@ -39,8 +39,9 @@ class CamaraClient:
                 self._ultima_requisicao = time.monotonic()
                 if resposta.status_code == 429 or resposta.status_code >= 500:
                     retry = resposta.headers.get("Retry-After")
-                    time.sleep(min(float(retry), 30) if retry and retry.isdigit() else min(2 ** tentativa, 10))
-                    resposta.raise_for_status()
+                    time.sleep(min(float(retry), 30) if retry and str(retry).isdigit() else min(2 ** tentativa, 10))
+                    ultimo_erro = CamaraAPIError(f"HTTP {resposta.status_code} ao consultar {url}")
+                    continue
                 resposta.raise_for_status()
                 try:
                     corpo = resposta.json()
@@ -49,29 +50,72 @@ class CamaraClient:
                 if not isinstance(corpo, dict) or "dados" not in corpo:
                     raise CamaraAPIError("Formato inesperado na resposta da API da Câmara.")
                 return corpo
+            except requests.HTTPError as exc:
+                ultimo_erro = exc
+                status = exc.response.status_code if exc.response is not None else None
+                if status is not None and 400 <= status < 500:
+                    break
+                if tentativa + 1 < self.tentativas:
+                    time.sleep(min(2 ** tentativa, 10))
             except (requests.RequestException, CamaraAPIError) as exc:
                 ultimo_erro = exc
+                if isinstance(exc, CamaraAPIError):
+                    break
                 if tentativa + 1 < self.tentativas:
                     time.sleep(min(2 ** tentativa, 10))
         raise CamaraAPIError(f"Falha ao consultar {url}: {ultimo_erro}") from ultimo_erro
 
     def listar(self, caminho, params=None, itens=100, max_paginas=None):
-        """Percorre páginas sem exceder o limite oficial de 100 itens por chamada."""
+        """Percorre as páginas seguindo os links fornecidos pela API."""
         if not 1 <= int(itens) <= 100:
             raise ValueError("O parâmetro itens deve estar entre 1 e 100.")
+
         base = dict(params or {})
         pagina = int(base.pop("pagina", 1))
         paginas_lidas = 0
+        proxima_url = None
+        urls_vistas = set()
+
         while True:
-            corpo = self.get(caminho, {**base, "pagina": pagina, "itens": int(itens)})
+            if proxima_url:
+                if proxima_url in urls_vistas:
+                    break
+                urls_vistas.add(proxima_url)
+                corpo = self.get(proxima_url)
+            else:
+                corpo = self.get(
+                    caminho,
+                    {**base, "pagina": pagina, "itens": int(itens)}
+                )
+
             dados = corpo.get("dados") or []
             if not isinstance(dados, list):
-                raise CamaraAPIError("A listagem retornou um campo 'dados' que não é uma lista.")
+                raise CamaraAPIError(
+                    "A listagem retornou um campo 'dados' que não é uma lista."
+                )
+
             for item in dados:
                 yield item
+
             paginas_lidas += 1
-            if not dados or len(dados) < int(itens):
-                break
+
             if max_paginas is not None and paginas_lidas >= max_paginas:
                 break
-            pagina += 1
+
+            links = corpo.get("links") or []
+            proximo = next(
+                (
+                    link.get("href")
+                    for link in links
+                    if link.get("rel") == "next" and link.get("href")
+                ),
+                None,
+            )
+
+            if proximo:
+                proxima_url = proximo
+            elif not dados or len(dados) < int(itens):
+                break
+            else:
+                pagina += 1
+                proxima_url = None
