@@ -1,0 +1,93 @@
+"""Modelos normalizados recebidos da Câmara. Tabelas em 003_camara.sql."""
+from app.extensions import db
+from sqlalchemy.dialects.postgresql import JSONB
+
+
+class PartidoCamara(db.Model):
+    __tablename__ = "partidos_camara"
+    id = db.Column(db.BigInteger, primary_key=True)
+    sigla = db.Column(db.String(30), nullable=False, unique=True)
+    id_partido_camara = db.Column(db.Integer, unique=True)
+    nome = db.Column(db.String(180))
+    uri_origem = db.Column(db.Text)
+    origem = db.Column(db.String(80), nullable=False, default="camara_deputados")
+    coletado_em = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.now())
+    atualizado_em = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.now())
+    dados_origem = db.Column(JSONB)
+
+
+class MandatoCamara(db.Model):
+    __tablename__ = "mandatos_camara"
+    id = db.Column(db.BigInteger, primary_key=True)
+    politico_id = db.Column(db.BigInteger, db.ForeignKey("politicos.id", ondelete="CASCADE"), nullable=False)
+    id_deputado_camara = db.Column(db.Integer, nullable=False)
+    id_legislatura = db.Column(db.Integer)
+    chave_origem = db.Column(db.String(180), nullable=False, unique=True)
+    data_inicio = db.Column(db.Date)
+    data_fim = db.Column(db.Date)
+    partido_sigla = db.Column(db.String(30))
+    uf = db.Column(db.String(2))
+    situacao = db.Column(db.Text)
+    origem = db.Column(db.String(80), nullable=False, default="camara_deputados")
+    coletado_em = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.now())
+    atualizado_em = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.now())
+    dados_origem = db.Column(JSONB)
+
+
+class DespesaCamara(db.Model):
+    __tablename__ = "despesas_camara"
+    id = db.Column(db.BigInteger, primary_key=True)
+    id_deputado_camara = db.Column(db.Integer, nullable=False)
+    id_documento = db.Column(db.BigInteger)
+    chave_origem = db.Column(db.String(180), nullable=False, unique=True)
+    ano = db.Column(db.Integer)
+    mes = db.Column(db.Integer)
+    tipo_despesa = db.Column(db.Text)
+    tipo_documento = db.Column(db.Text)
+    data_documento = db.Column(db.Date)
+    fornecedor = db.Column(db.Text)
+    cnpj_cpf_fornecedor = db.Column(db.String(30))
+    valor_documento = db.Column(db.Numeric(14, 2))
+    valor_liquido = db.Column(db.Numeric(14, 2))
+    url_documento = db.Column(db.Text)
+    origem = db.Column(db.String(80), nullable=False, default="camara_deputados")
+    coletado_em = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.now())
+    atualizado_em = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.now())
+    dados_origem = db.Column(JSONB)
+    __table_args__ = (db.Index("ix_despesas_camara_deputado_periodo", "id_deputado_camara", "ano", "mes"),)
+
+
+class ProposicaoCamara(db.Model):
+    __tablename__ = "proposicoes_camara"
+    id = db.Column(db.BigInteger, primary_key=True)
+    id_proposicao_camara = db.Column(db.Integer, nullable=False, unique=True)
+    uri_origem = db.Column(db.Text)
+    sigla_tipo = db.Column(db.String(30))
+    numero = db.Column(db.Integer)
+    ano = db.Column(db.Integer)
+    ementa = db.Column(db.Text)
+    data_apresentacao = db.Column(db.Date)
+    uri_orgao_numerador = db.Column(db.Text)
+    status_descricao = db.Column(db.Text)
+    status_data_hora = db.Column(db.DateTime(timezone=True))
+    origem = db.Column(db.String(80), nullable=False, default="camara_deputados")
+    coletado_em = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.now())
+    atualizado_em = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.now())
+    dados_origem = db.Column(JSONB)
+
+
+class DataSyncLog(db.Model):
+    """Auditoria das coletas da Câmara. Não reutiliza o log genérico de data_sources."""
+
+    __tablename__ = "data_sync_logs"
+    id = db.Column(db.BigInteger, primary_key=True)
+    fonte = db.Column(db.String(80), nullable=False)
+    entidade = db.Column(db.String(80), nullable=False)
+    operacao = db.Column(db.String(30), nullable=False)
+    status = db.Column(db.String(20), nullable=False)
+    iniciada_em = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.now())
+    finalizada_em = db.Column(db.DateTime(timezone=True))
+    registros_lidos = db.Column(db.Integer, nullable=False, default=0)
+    registros_novos = db.Column(db.Integer, nullable=False, default=0)
+    registros_atualizados = db.Column(db.Integer, nullable=False, default=0)
+    mensagem = db.Column(db.Text)

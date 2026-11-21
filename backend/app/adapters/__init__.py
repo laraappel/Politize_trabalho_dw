@@ -1,1 +1,1 @@
-"""Adaptadores de fontes externas."""
+"""Adaptadores independentes para fontes externas de dados."""

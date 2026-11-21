@@ -38,13 +38,13 @@ Estados esperados: `healthy`.
 
 ## Portas padrão
 
-| Serviço | Porta no host |
-| --- | --- |
-| Frontend | 3000 |
-| Backend | 5000 |
-| PostgreSQL | 5432 |
+| Serviço | Porta no host | Porta no container |
+| --- | --- | --- |
+| Frontend | 3000 | 3000 |
+| Backend | 5001 | 5000 |
+| PostgreSQL | 5433 | 5432 |
 
-Altere no `.env` se houver conflito local. No Windows, as portas `5000` e `5432` costumam estar ocupadas; use `5001` e `5433` e atualize também `VITE_API_URL`.
+O navegador usa `VITE_API_URL=http://localhost:5001`. A URL `DATABASE_URL` do backend usa o host `db` e a porta interna `5432`. Se alterar `BACKEND_PORT`, atualize `VITE_API_URL` para a mesma porta publicada.
 
 ## Dados e testes
 

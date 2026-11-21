@@ -30,7 +30,7 @@ class DataSource(TimestampMixin, db.Model):
         server_default=db.text("false"),
     )
 
-    sync_logs = relationship("DataSyncLog", back_populates="data_source")
+    sync_logs = relationship("DataSourceSyncLog", back_populates="data_source")
 
     def to_dict(self):
         return {
@@ -49,18 +49,24 @@ class DataSource(TimestampMixin, db.Model):
         return {"id": self.id, "code": self.code, "name": self.name}
 
 
-class DataSyncLog(db.Model):
-    __tablename__ = "data_sync_logs"
+class DataSourceSyncLog(db.Model):
+    """Log genérico por fonte cadastrada em data_sources.
+
+    A tabela data_sync_logs permanece reservada ao DataSyncLog da Câmara
+    (database/migrations/003_camara.sql).
+    """
+
+    __tablename__ = "data_source_sync_logs"
     __table_args__ = (
-        db.Index("ix_data_sync_logs_source_started", "data_source_id", "started_at"),
-        db.Index("ix_data_sync_logs_status", "status"),
+        db.Index("ix_data_source_sync_logs_source_started", "data_source_id", "started_at"),
+        db.Index("ix_data_source_sync_logs_status", "status"),
         db.CheckConstraint(
             "status IN ('running', 'success', 'failed')",
-            name="ck_data_sync_logs_status",
+            name="ck_data_source_sync_logs_status",
         ),
         db.CheckConstraint(
             "records_read >= 0 AND records_upserted >= 0 AND records_failed >= 0",
-            name="ck_data_sync_logs_counts",
+            name="ck_data_source_sync_logs_counts",
         ),
     )
 

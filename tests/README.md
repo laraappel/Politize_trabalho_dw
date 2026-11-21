@@ -13,7 +13,7 @@ O `-c /app/pytest.ini` carrega configuração e caminho de importação Python d
 Para executar somente os testes HTTP a partir do host, instale `pytest` e `requests` e configure:
 
 ```powershell
-$env:API_URL = "http://localhost:5000"
+$env:API_URL = "http://localhost:5001"
 pytest tests/integration/test_health.py -q
 ```
 

@@ -1,1 +1,1 @@
-"""Importação e consulta dos dados da Câmara dos Deputados."""
+"""Importação, sincronização e apoio à consulta dos dados da Câmara dos Deputados."""
