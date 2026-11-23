@@ -24,6 +24,7 @@ PER_PAGE_PADRAO, PER_PAGE_MAX = 10, 50
 GRAUS = {"alta": "Alta", "media": "Média", "baixa": "Baixa", "manual": "Revisão manual"}
 
 
+
 @dataclass
 class Filtros:
     politico: int | None = None

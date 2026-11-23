@@ -50,12 +50,6 @@ class DataSource(TimestampMixin, db.Model):
 
 
 class DataSourceSyncLog(db.Model):
-    """Log genérico por fonte cadastrada em data_sources.
-
-    A tabela data_sync_logs permanece reservada ao DataSyncLog da Câmara
-    (database/migrations/003_camara.sql).
-    """
-
     __tablename__ = "data_source_sync_logs"
     __table_args__ = (
         db.Index("ix_data_source_sync_logs_source_started", "data_source_id", "started_at"),

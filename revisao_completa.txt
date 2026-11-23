@@ -1,0 +1,412 @@
+
+
+========== backend\app\adapters\camara\client.py ==========
+
+
+
+========== backend\app\services\camara\sincronizacao.py ==========
+
+"""Orquestra a coleta: fonte -> deduplicação -> associação -> persistência."""
+import os
+from datetime import datetime, timedelta, timezone
+
+from sqlalchemy import select
+
+from app.extensions import db
+from app.models.noticia import (
+    ColetaNoticias,
+    Noticia,
+    NoticiaAtualizacao,
+    NoticiaPolitico,
+    Veiculo,
+)
+from app.services.noticias.associacao import AssociadorPoliticos
+from app.services.noticias.classificacao import classificar_natureza
+from app.services.noticias.fontes import todas_as_fontes
+from app.services.noticias.fontes.base import ErroColeta, FonteNaoAutorizada, FonteNoticias, ItemBruto
+from app.services.noticias.normalizacao import canonicalizar_url, chave_dedup, slugify
+from app.services.noticias.politicos_repo import carregar_politicos
+
+
+def _agora():
+    return datetime.now(timezone.utc)
+
+
+def sincronizar_veiculos(fontes: dict[str, FonteNoticias] | None = None) -> dict[str, Veiculo]:
+    """Garante uma linha em `veiculos` por fonte, com a base de autorização registrada."""
+    fontes = fontes or todas_as_fontes()
+    resultado = {}
+    for slug, f in fontes.items():
+        v = db.session.scalar(select(Veiculo).where(Veiculo.slug == slug))
+        if v is None:
+            v = Veiculo(slug=slug)
+            db.session.add(v)
+        v.nome, v.dominio, v.tipo = f.nome, f.dominio, f.tipo
+        v.coleta_autorizada, v.permite_resumo = f.autorizada, f.permite_resumo
+        v.base_autorizacao, v.url_termos = f.base_autorizacao, f.url_termos
+        resultado[slug] = v
+    db.session.commit()
+    return resultado
+
+
+def _assunto(item: ItemBruto) -> tuple[str | None, str | None]:
+    if item.assunto_padrao:
+        return item.assunto_padrao
+    if item.categorias:
+        return slugify(item.categorias[0]), item.categorias[0]
+    return None, None
+
+
+def _aplicar_associacoes(noticia: Noticia, candidatas) -> None:
+    existentes = {a.politico_id: a for a in noticia.associacoes}
+    for c in candidatas:
+        atual = existentes.get(c.politico_id)
+        if atual is not None:
+            # nunca sobrescreve revisão manual nem associação rejeitada
+            continue
+        noticia.associacoes.append(
+            NoticiaPolitico(
+                politico_id=c.politico_id,
+                status=c.status,
+                grau_confirmacao=c.grau,
+                metodo=c.metodo,
+                origem="automatica",
+                evidencias=c.evidencias,
+            )
+        )
+
+
+def _localizar_existente(veiculo: Veiculo, item: ItemBruto, url_canonica: str, chave: str) -> Noticia | None:
+    cond = [Noticia.url_canonica == url_canonica, Noticia.chave_dedup == chave]
+    consulta = select(Noticia).where(db.or_(*cond))
+    if item.guid:
+        consulta = select(Noticia).where(
+            db.or_(*cond, db.and_(Noticia.veiculo_id == veiculo.id, Noticia.guid_origem == item.guid))
+        )
+    return db.session.scalars(consulta).first()
+
+
+def processar_item(veiculo: Veiculo, associador: AssociadorPoliticos, item: ItemBruto) -> str:
+    """Retorna 'novo', 'atualizado', 'inalterado' ou 'descartado'."""
+    candidatas = associador.associar(item.titulo, item.resumo, item.links_html)
+    url_canonica = canonicalizar_url(item.url)
+    chave = chave_dedup(veiculo.slug, item.titulo, item.publicado_em)
+    existente = _localizar_existente(veiculo, item, url_canonica, chave)
+
+    if existente is None:
+        if not candidatas:
+            return "descartado"  # sem vínculo com nenhum político cadastrado: não armazenamos
+        slug_assunto, nome_assunto = _assunto(item)
+        noticia = Noticia(
+            veiculo_id=veiculo.id,
+            url_original=item.url,
+            url_canonica=url_canonica,
+            guid_origem=item.guid,
+            chave_dedup=chave,
+            titulo_original=item.titulo,
+            resumo=item.resumo if veiculo.permite_resumo else None,
+            publicado_em=item.publicado_em,
+            assunto_slug=slug_assunto,
+            assunto_nome=nome_assunto,
+            natureza=classificar_natureza(item.titulo, item.resumo),
+            natureza_origem="heuristica",
+        )
+        db.session.add(noticia)
+        _aplicar_associacoes(noticia, candidatas)
+        db.session.flush()
+        return "novo"
+
+    mudou = False
+    if existente.titulo_original != item.titulo:
+        db.session.add(
+            NoticiaAtualizacao(
+                noticia_id=existente.id,
+                tipo="alteracao_titulo",
+                descricao=f"Título alterado pelo veículo. Anterior: {existente.titulo_original}",
+                url_referencia=existente.url_original,
+                criado_por="sistema",
+            )
+        )
+        existente.titulo_original = item.titulo
+        mudou = True
+    antes = len(existente.associacoes)
+    _aplicar_associacoes(existente, candidatas)
+    if len(existente.associacoes) != antes:
+        mudou = True
+    if mudou:
+        existente.atualizado_em = _agora()
+        db.session.flush()
+        return "atualizado"
+    return "inalterado"
+
+
+def coletar_fonte(slug: str, forcar: bool = False, fontes: dict[str, FonteNoticias] | None = None) -> ColetaNoticias:
+    fontes = fontes or todas_as_fontes()
+    if slug not in fontes:
+        raise KeyError(f"Fonte desconhecida: {slug}")
+    fonte = fontes[slug]
+    veiculo = sincronizar_veiculos({slug: fonte})[slug]
+
+    coleta = ColetaNoticias(veiculo_id=veiculo.id, status="em_andamento")
+    db.session.add(coleta)
+    db.session.commit()
+
+    def encerrar(status, mensagem=None):
+        coleta.status, coleta.mensagem, coleta.finalizada_em = status, mensagem, _agora()
+        db.session.commit()
+        return coleta
+
+    if not fonte.autorizada:
+        return encerrar("ignorada", f"Fonte sem acesso autorizado: {fonte.base_autorizacao}")
+
+    intervalo = int(os.getenv("NOTICIAS_INTERVALO_MIN_SEGUNDOS", "900"))
+    if not forcar and veiculo.ultima_coleta_em and _agora() - veiculo.ultima_coleta_em < timedelta(seconds=intervalo):
+        return encerrar("ignorada", f"Última coleta há menos de {intervalo}s; respeitando intervalo mínimo.")
+
+    try:
+        itens = fonte.coletar()
+    except (FonteNaoAutorizada, ErroColeta) as exc:
+        db.session.rollback()
+        return encerrar("erro", str(exc))
+
+    politicos = carregar_politicos()
+    if not politicos:
+        veiculo.ultima_coleta_em = _agora()
+        coleta.itens_lidos = len(itens)
+        return encerrar("ok", "Nenhum político cadastrado: nada foi associado nem armazenado.")
+
+    associador = AssociadorPoliticos(politicos)
+    contagem = {"novo": 0, "atualizado": 0, "inalterado": 0, "descartado": 0}
+    for item in itens:
+        try:
+            with db.session.begin_nested():
+                contagem[processar_item(veiculo, associador, item)] += 1
+        except Exception as exc:  # um item ruim não derruba a coleta
+            contagem["descartado"] += 1
+            coleta.mensagem = f"Erro em item {item.url}: {exc}"[:500]
+    veiculo.ultima_coleta_em = _agora()
+    coleta.itens_lidos = len(itens)
+    coleta.itens_novos = contagem["novo"]
+    coleta.itens_atualizados = contagem["atualizado"]
+    coleta.itens_descartados = contagem["descartado"]
+    return encerrar("ok", coleta.mensagem)
+
+
+
+========== backend\app\cli.py ==========
+
+"""Comandos de linha de comando: migrações e coleta de notícias."""
+import os
+from datetime import date
+from pathlib import Path
+
+import click
+from sqlalchemy import text
+
+from app.extensions import db
+
+
+def _dir_migracoes() -> Path:
+    return Path(os.getenv("MIGRATIONS_DIR", "/database/migrations"))
+
+
+def register_cli(app):
+    @app.cli.command("migrate")
+    def migrate():
+        """Aplica database/migrations/*.sql ainda não registradas em schema_migrations."""
+        pasta = _dir_migracoes()
+        if not pasta.is_dir():
+            raise click.ClickException(f"Pasta de migrações não encontrada: {pasta}")
+
+        aplicadas = {
+            r[0]
+            for r in db.session.execute(
+                text("SELECT version FROM schema_migrations")
+            )
+        }
+
+        for arquivo in sorted(pasta.glob("*.sql")):
+            versao = arquivo.stem
+
+            if versao in aplicadas:
+                click.echo(f"= {versao} (já aplicada)")
+                continue
+
+            db.session.connection().exec_driver_sql(
+                arquivo.read_text(encoding="utf-8")
+            )
+            db.session.commit()
+            click.echo(f"+ {versao} aplicada")
+
+        from app.services.noticias.coleta import sincronizar_veiculos
+
+        sincronizar_veiculos()
+        click.echo("Fontes de notícias sincronizadas.")
+
+    @app.cli.command("sincronizar-fontes")
+    def sincronizar_fontes():
+        """Atualiza a tabela veiculos com a base de autorização de cada fonte."""
+        from app.services.noticias.coleta import sincronizar_veiculos
+
+        for slug, v in sincronizar_veiculos().items():
+            click.echo(
+                f"{slug}: coleta_autorizada={v.coleta_autorizada}"
+            )
+
+    @app.cli.command("coletar-noticias")
+    @click.option(
+        "--fonte",
+        "fonte",
+        default=None,
+        help="Slug da fonte (padrão: todas as autorizadas).",
+    )
+    @click.option(
+        "--forcar",
+        is_flag=True,
+        help="Ignora o intervalo mínimo entre coletas.",
+    )
+    def coletar_noticias(fonte, forcar):
+        """Coleta metadados de notícias das fontes autorizadas."""
+        from app.services.noticias.coleta import coletar_fonte
+        from app.services.noticias.fontes import todas_as_fontes
+
+        fontes = todas_as_fontes()
+        alvos = (
+            [fonte]
+            if fonte
+            else [s for s, f in fontes.items() if f.autorizada]
+        )
+
+        for slug in alvos:
+            c = coletar_fonte(slug, forcar=forcar, fontes=fontes)
+
+            click.echo(
+                f"{slug}: {c.status} lidos={c.itens_lidos} "
+                f"novos={c.itens_novos} "
+                f"atualizados={c.itens_atualizados} "
+                f"descartados={c.itens_descartados}"
+                + (f" | {c.mensagem}" if c.mensagem else "")
+            )
+
+    @app.cli.command("importar-camara-inicial")
+    @click.option(
+        "--ano-inicial",
+        type=int,
+        default=lambda: date.today().year,
+        show_default="ano atual",
+        help="Primeiro ano de despesas e proposições a importar.",
+    )
+    @click.option(
+        "--ano-final",
+        type=int,
+        default=lambda: date.today().year,
+        show_default="ano atual",
+        help="Último ano de despesas e proposições a importar.",
+    )
+    @click.option(
+        "--limite-deputados",
+        type=click.IntRange(min=1),
+        default=None,
+        help="Limita deputados para teste controlado.",
+    )
+    @click.option(
+        "--limite-proposicoes",
+        type=click.IntRange(min=1),
+        default=None,
+        help="Limita proposições para teste controlado.",
+    )
+    def importar_camara_inicial(
+        ano_inicial,
+        ano_final,
+        limite_deputados,
+        limite_proposicoes,
+    ):
+        """Importa dados iniciais da Câmara. Execute manualmente, fora das requisições web."""
+        if ano_inicial > ano_final:
+            raise click.ClickException(
+                "ano-inicial não pode ser maior que ano-final."
+            )
+
+        from app.services.camara.sincronizacao import CamaraSyncService
+
+        try:
+            resultados = CamaraSyncService().importar_inicial(
+                ano_inicial,
+                ano_final,
+                limite_deputados,
+                limite_proposicoes,
+            )
+
+            for entidade, (lidos, novos, atualizados) in resultados.items():
+                click.echo(
+                    f"{entidade}: lidos={lidos} "
+                    f"novos={novos} atualizados={atualizados}"
+                )
+
+        except Exception as exc:
+            raise click.ClickException(
+                f"Importação inicial da Câmara falhou: {exc}"
+            ) from exc
+
+    @app.cli.command("atualizar-camara")
+    @click.option(
+        "--ano",
+        type=int,
+        default=lambda: date.today().year,
+        show_default="ano atual",
+        help="Ano a consultar para despesas e proposições.",
+    )
+    @click.option(
+        "--limite-deputados",
+        type=click.IntRange(min=1),
+        default=None,
+        help="Limita deputados para teste controlado.",
+    )
+    def atualizar_camara(ano, limite_deputados):
+        """Atualiza os registros já importados e incorpora novos dados da Câmara."""
+        from app.services.camara.sincronizacao import CamaraSyncService
+
+        try:
+            resultados = CamaraSyncService().atualizar(
+                ano,
+                limite_deputados,
+            )
+
+            for entidade, (lidos, novos, atualizados) in resultados.items():
+                click.echo(
+                    f"{entidade}: lidos={lidos} "
+                    f"novos={novos} atualizados={atualizados}"
+                )
+
+        except Exception as exc:
+            raise click.ClickException(
+                f"Atualização da Câmara falhou: {exc}"
+            ) from exc
+
+    @app.cli.command("importar-dados")
+    @click.option(
+        "--arquivo",
+        required=True,
+        type=click.Path(exists=True, dir_okay=False),
+    )
+    def importar_dados(arquivo):
+        """Importa um pacote JSON de forma idempotente (não cria duplicatas)."""
+        from app.services.importacao import importar_arquivo
+
+        resumo = importar_arquivo(arquivo)
+
+        click.echo(
+            f"políticos novos={resumo['politicos_novos']} "
+            f"existentes={resumo['politicos_existentes']}"
+        )
+
+        click.echo(
+            f"mandatos novos={resumo['mandatos_novos']} "
+            f"projetos novos={resumo['projetos_novos']} "
+            f"votações novas={resumo['votacoes_novas']} "
+            f"despesas novas={resumo['despesas_novas']} "
+            f"notícias novas={resumo['noticias_novas']}"
+        )
+
+        if resumo.get("aviso"):
+            click.echo(resumo["aviso"])

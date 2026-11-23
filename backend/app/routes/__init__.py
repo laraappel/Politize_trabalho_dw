@@ -1,3 +1,5 @@
+"""Registro central dos blueprints da API."""
+
 from app.routes.camara import camara_bp
 from app.routes.health import health_bp
 from app.routes.noticias import noticias_bp
