@@ -1,5 +1,6 @@
 
 """Importação idempotente dos dados públicos da Câmara para o PostgreSQL."""
+
 import hashlib
 import json
 from datetime import date, datetime, timezone
@@ -10,6 +11,7 @@ from sqlalchemy import select
 from app.adapters.camara.client import CamaraClient
 from app.extensions import db
 from app.models.politico import Politico as PoliticoRef
+from app.models.dominio import Votacao
 from app.models.camara import (
     DataSyncLog,
     DespesaCamara,
@@ -125,6 +127,7 @@ def _executar_log(entidade, operacao, funcao):
 
 
 class CamaraSyncService:
+
     def __init__(self, client=None):
         self.client = client or CamaraClient()
 
@@ -234,7 +237,6 @@ class CamaraSyncService:
                     atualizados += 1
 
                 politico.coletado_em = agora
-
                 db.session.flush()
 
                 if sigla:
@@ -262,7 +264,7 @@ class CamaraSyncService:
     def sincronizar_mandatos(
         self, operacao="atualizacao", limite_deputados=None
     ):
-        """Sincroniza eventos do endpoint /historico sem trat?-los como mandatos."""
+        """Sincroniza eventos do endpoint /historico sem tratá-los como mandatos."""
 
         def importar():
             lidos = novos = atualizados = 0
@@ -436,9 +438,7 @@ class CamaraSyncService:
 
                 proposicoes = self.client.listar(
                     "proposicoes",
-                    params={
-                        "ano": int(ano),
-                    },
+                    params={"ano": int(ano)},
                     itens=100,
                 )
 
@@ -498,6 +498,172 @@ class CamaraSyncService:
 
         return _executar_log("proposicoes", operacao, importar)
 
+    def sincronizar_votacoes(
+        self, ano, operacao="atualizacao", limite_deputados=None
+    ):
+        """Importa os votos individuais dos deputados nas votações do Plenário."""
+
+        def importar():
+            lidos = novos = atualizados = 0
+
+            politicos = db.session.execute(
+                select(PoliticoRef)
+                .where(PoliticoRef.id_camara.is_not(None))
+                .order_by(PoliticoRef.id_camara.asc())
+            ).scalars().all()
+
+            if limite_deputados is not None:
+                politicos = politicos[:limite_deputados]
+
+            por_id_camara = {
+                int(p.id_camara): p
+                for p in politicos
+                if p.id_camara is not None
+            }
+
+            if not por_id_camara:
+                return 0, 0, 0
+
+            periodos = [
+                (f"{ano}-01-01", f"{ano}-03-31"),
+                (f"{ano}-04-01", f"{ano}-06-30"),
+                (f"{ano}-07-01", f"{ano}-09-30"),
+                (f"{ano}-10-01", f"{ano}-12-31"),
+            ]
+
+            for inicio, fim in periodos:
+                votacoes = self.client.listar(
+                    "votacoes",
+                    params={
+                        "dataInicio": inicio,
+                        "dataFim": fim,
+                        "idOrgao": 180,
+                    },
+                    itens=100,
+                )
+
+                for votacao in votacoes:
+                    id_votacao = votacao.get("id")
+                    if id_votacao is None:
+                        continue
+
+                    resposta = self.client.get_opcional(
+                        f"votacoes/{id_votacao}/votos"
+                    )
+
+                    for registro in resposta.get("dados") or []:
+                        if not isinstance(registro, dict):
+                            continue
+
+                        deputado = (
+                            registro.get("deputado")
+                            or registro.get("deputado_")
+                            or {}
+                        )
+
+                        id_deputado = deputado.get("id")
+                        if id_deputado is None:
+                            continue
+
+                        politico = por_id_camara.get(int(id_deputado))
+                        if politico is None:
+                            continue
+
+                        voto_original = (
+                            registro.get("tipoVoto")
+                            or registro.get("voto")
+                            or ""
+                        )
+
+                        # Normaliza todos os valores para a restrição do PostgreSQL.
+                        chave_voto = str(voto_original).strip().casefold()
+
+                        mapa_votos = {
+                            "sim": "sim",
+                            "não": "nao",
+                            "nao": "nao",
+                            "abstenção": "abstencao",
+                            "abstencao": "abstencao",
+                            "obstrução": "obstrucao",
+                            "obstrucao": "obstrucao",
+                            "ausente": "ausente",
+                            "não informado": "nao_informado",
+                            "nao informado": "nao_informado",
+                        }
+
+                        tipo_voto = mapa_votos.get(
+                            chave_voto,
+                            "nao_informado",
+                        )
+
+                        # Garantia final: somente valores aceitos pelo banco.
+                        valores_permitidos = {
+                            "sim",
+                            "nao",
+                            "abstencao",
+                            "obstrucao",
+                            "ausente",
+                            "nao_informado",
+                        }
+
+                        if tipo_voto not in valores_permitidos:
+                            tipo_voto = "nao_informado"
+
+                        lidos += 1
+                        identificador = f"camara:{id_votacao}"
+
+                        url = (
+                            votacao.get("uri")
+                            or (
+                                "https://dadosabertos.camara.leg.br/"
+                                f"api/v2/votacoes/{id_votacao}"
+                            )
+                        )
+
+                        campos = {
+                            "politico_id": politico.id,
+                            "identificador_externo": identificador,
+                            "casa": "Câmara dos Deputados",
+                            "data_votacao": _data(votacao.get("data")),
+                            "ementa": (
+                                votacao.get("descricao")
+                                or votacao.get("descricaoVotacao")
+                            ),
+                            "voto": tipo_voto,
+                            "url_oficial": url,
+                            "origem_dados": "oficial",
+                            "fonte_nome": "Câmara dos Deputados",
+                            "fonte_url": url,
+                        }
+
+                        existente = db.session.execute(
+                            select(Votacao).where(
+                                Votacao.politico_id == politico.id,
+                                Votacao.identificador_externo == identificador,
+                            )
+                        ).scalar_one_or_none()
+
+                        if existente is None:
+                            db.session.add(Votacao(**campos))
+                            novos += 1
+                        else:
+                            alterou = False
+                            for nome, valor in campos.items():
+                                if valor is not None and getattr(
+                                    existente, nome
+                                ) != valor:
+                                    setattr(existente, nome, valor)
+                                    alterou = True
+
+                            if alterou:
+                                atualizados += 1
+
+                    db.session.commit()
+
+            return lidos, novos, atualizados
+
+        return _executar_log("votacoes", operacao, importar)
+
     def importar_inicial(
         self,
         ano_inicial,
@@ -526,6 +692,9 @@ class CamaraSyncService:
         resultados["proposicoes"] = self.sincronizar_proposicoes(
             anos, "carga_inicial", limite_proposicoes
         )
+        resultados["votacoes"] = self.sincronizar_votacoes(
+            ano_final, "carga_inicial", limite_deputados
+        )
 
         return resultados
 
@@ -546,6 +715,9 @@ class CamaraSyncService:
         )
         resultados["proposicoes"] = self.sincronizar_proposicoes(
             [ano], "atualizacao"
+        )
+        resultados["votacoes"] = self.sincronizar_votacoes(
+            ano, "atualizacao", limite_deputados
         )
 
         return resultados
