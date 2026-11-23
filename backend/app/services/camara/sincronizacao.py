@@ -71,12 +71,15 @@ def _atualizar_campos(objeto, campos):
     for nome, valor in campos.items():
         if valor is None:
             continue
+
         atual = getattr(objeto, nome)
+
         if isinstance(atual, datetime) and isinstance(valor, datetime):
             if atual.tzinfo is None:
                 atual = atual.replace(tzinfo=timezone.utc)
             if valor.tzinfo is None:
                 valor = valor.replace(tzinfo=timezone.utc)
+
         if atual != valor:
             setattr(objeto, nome, valor)
             alterou = True
@@ -264,10 +267,11 @@ class CamaraSyncService:
     def sincronizar_mandatos(
         self, operacao="atualizacao", limite_deputados=None
     ):
-        """Sincroniza eventos do endpoint /historico sem tratá-los como mandatos."""
+        """Importa o histórico e cria um mandato por deputado e legislatura."""
 
         def importar():
             lidos = novos = atualizados = 0
+            cache_legislaturas = {}
 
             politicos = db.session.execute(
                 select(PoliticoRef)
@@ -290,11 +294,19 @@ class CamaraSyncService:
                         or dados.get("itens", [])
                     )
 
+                eventos_por_legislatura = {}
+
                 for item in dados:
                     if not isinstance(item, dict):
                         continue
 
+                    id_legislatura = item.get("idLegislatura")
+                    if id_legislatura is None:
+                        continue
+
+                    id_legislatura = int(id_legislatura)
                     lidos += 1
+
                     chave = (
                         f"historico:{politico.id_camara}:"
                         f"{_json_chave(item)}"
@@ -309,7 +321,7 @@ class CamaraSyncService:
                     campos = {
                         "politico_id": politico.id,
                         "id_deputado_camara": politico.id_camara,
-                        "id_legislatura": item.get("idLegislatura"),
+                        "id_legislatura": id_legislatura,
                         "nome": item.get("nome"),
                         "nome_eleitoral": item.get("nomeEleitoral"),
                         "sigla_partido": item.get("siglaPartido"),
@@ -336,17 +348,132 @@ class CamaraSyncService:
                     elif _atualizar_campos(registro, campos):
                         atualizados += 1
 
+                    eventos_por_legislatura.setdefault(
+                        id_legislatura, []
+                    ).append(item)
+
+                for id_legislatura, eventos in eventos_por_legislatura.items():
+                    if id_legislatura not in cache_legislaturas:
+                        try:
+                            resposta = self.client.get(
+                                f"legislaturas/{id_legislatura}"
+                            )
+                            cache_legislaturas[id_legislatura] = (
+                                resposta.get("dados") or {}
+                            )
+                        except Exception as exc:
+                            print(
+                                f"Não foi possível consultar a legislatura "
+                                f"{id_legislatura}: {exc}"
+                            )
+                            cache_legislaturas[id_legislatura] = {}
+
+                    legislatura = cache_legislaturas[id_legislatura]
+
+                    eventos_ordenados = sorted(
+                        eventos,
+                        key=lambda item: (
+                            _data_hora(item.get("dataHora"))
+                            or datetime.min.replace(
+                                tzinfo=timezone.utc
+                            )
+                        ),
+                    )
+
+                    primeiro = eventos_ordenados[0]
+                    ultimo = eventos_ordenados[-1]
+
+                    data_inicio = _data(legislatura.get("dataInicio"))
+                    data_fim = _data(legislatura.get("dataFim"))
+
+                    if data_inicio is None:
+                        data_inicio = _data(primeiro.get("dataHora"))
+
+                    if data_fim is None:
+                        data_fim = _data(ultimo.get("dataHora"))
+
+                    if data_inicio is None or data_fim is None:
+                        continue
+
+                    chave_mandato = (
+                        f"mandato:{politico.id_camara}:{id_legislatura}"
+                    )
+
+                    mandato = db.session.execute(
+                        select(MandatoCamara).where(
+                            MandatoCamara.chave_origem == chave_mandato
+                        )
+                    ).scalar_one_or_none()
+
+                    data_saida = None
+
+                    for evento in eventos_ordenados:
+                        descricao = str(
+                            evento.get("descricaoStatus") or ""
+                        ).casefold()
+
+                        if "saída" in descricao or "saida" in descricao:
+                            data_saida = _data(evento.get("dataHora"))
+                            break
+
+                    if data_saida:
+                        data_fim = data_saida
+
+                    campos_mandato = {
+                        "politico_id": politico.id,
+                        "id_deputado_camara": politico.id_camara,
+                        "id_legislatura": id_legislatura,
+                        "data_inicio": data_inicio,
+                        "data_fim": data_fim,
+                        "partido_sigla": (
+                            ultimo.get("siglaPartido")
+                            or primeiro.get("siglaPartido")
+                        ),
+                        "uf": (
+                            ultimo.get("siglaUf")
+                            or primeiro.get("siglaUf")
+                        ),
+                        "situacao": (
+                            ultimo.get("situacao")
+                            or ultimo.get("descricaoStatus")
+                        ),
+                        "origem": FONTE,
+                        "dados_origem": {
+                            "legislatura": legislatura,
+                            "eventos": eventos,
+                        },
+                    }
+
+                    if mandato is None:
+                        db.session.add(
+                            MandatoCamara(
+                                chave_origem=chave_mandato,
+                                **campos_mandato,
+                            )
+                        )
+                        novos += 1
+                    elif _atualizar_campos(mandato, campos_mandato):
+                        atualizados += 1
+
                 db.session.commit()
 
             return lidos, novos, atualizados
 
-        return _executar_log("historico_deputados", operacao, importar)
+        return _executar_log(
+            "historico_deputados", operacao, importar
+        )
 
     def sincronizar_despesas(
         self, anos, operacao="atualizacao", limite_deputados=None
     ):
+        """
+        Importa despesas e continua a sincronização quando uma consulta
+        de despesas falha para um deputado ou ano específico.
+        """
+
         def importar():
             lidos = novos = atualizados = 0
+            falhas = 0
 
             politicos = db.session.execute(
                 select(PoliticoRef)
@@ -357,70 +484,126 @@ class CamaraSyncService:
             if limite_deputados is not None:
                 politicos = politicos[:limite_deputados]
 
-            for politico in politicos:
+            total = len(politicos)
+
+            for indice, politico in enumerate(politicos, start=1):
+                id_deputado = int(politico.id_camara)
+
                 for ano in anos:
-                    despesas = self.client.listar(
-                        f"deputados/{politico.id_camara}/despesas",
-                        params={"ano": int(ano)},
-                        itens=100,
-                    )
-
-                    for item in despesas:
-                        lidos += 1
-
-                        id_documento = item.get("codDocumento")
-
-                        if id_documento is not None:
-                            id_documento = str(id_documento)
-
-                        chave = (
-                            f"hash:{politico.id_camara}:"
-                            f"{_json_chave(item)}"
+                    # IMPORTANTE:
+                    # listar() é um gerador. O list() força a execução
+                    # de todas as páginas dentro deste try/except.
+                    try:
+                        despesas = list(
+                            self.client.listar(
+                                f"deputados/{id_deputado}/despesas",
+                                params={"ano": int(ano)},
+                                itens=100,
+                            )
                         )
 
-                        despesa = db.session.execute(
-                            select(DespesaCamara).where(
-                                DespesaCamara.chave_origem == chave
+                    except Exception as exc:
+                        falhas += 1
+                        db.session.rollback()
+
+                        print(
+                            f"[DESPESAS] Falha no deputado "
+                            f"{id_deputado}, ano {ano}: {exc}"
+                        )
+                        print(
+                            f"[DESPESAS] Continuando para o próximo "
+                            f"deputado ({indice}/{total})."
+                        )
+                        continue
+
+                    try:
+                        for item in despesas:
+                            if not isinstance(item, dict):
+                                continue
+
+                            lidos += 1
+
+                            id_documento = item.get("codDocumento")
+                            if id_documento is not None:
+                                id_documento = str(id_documento)
+
+                            chave = (
+                                f"hash:{id_deputado}:"
+                                f"{_json_chave(item)}"
                             )
-                        ).scalar_one_or_none()
 
-                        campos = {
-                            "id_deputado_camara": politico.id_camara,
-                            "id_documento": id_documento,
-                            "ano": item.get("ano") or int(ano),
-                            "mes": item.get("mes"),
-                            "tipo_despesa": item.get("tipoDespesa"),
-                            "tipo_documento": item.get("tipoDocumento"),
-                            "data_documento": _data(
-                                item.get("dataDocumento")
-                            ),
-                            "fornecedor": item.get("nomeFornecedor"),
-                            "cnpj_cpf_fornecedor": item.get(
-                                "cnpjCpfFornecedor"
-                            ),
-                            "valor_documento": _decimal(
-                                item.get("valorDocumento")
-                            ),
-                            "valor_liquido": _decimal(
-                                item.get("valorLiquido")
-                            ),
-                            "url_documento": item.get("urlDocumento"),
-                            "origem": FONTE,
-                            "dados_origem": item,
-                        }
-
-                        if despesa is None:
-                            db.session.add(
-                                DespesaCamara(
-                                    chave_origem=chave,
-                                    **campos,
+                            despesa = db.session.execute(
+                                select(DespesaCamara).where(
+                                    DespesaCamara.chave_origem == chave
                                 )
-                            )
-                            novos += 1
-                        elif _atualizar_campos(despesa, campos):
-                            atualizados += 1
+                            ).scalar_one_or_none()
 
-                    db.session.commit()
+                            campos = {
+                                "id_deputado_camara": id_deputado,
+                                "id_documento": id_documento,
+                                "ano": item.get("ano") or int(ano),
+                                "mes": item.get("mes"),
+                                "tipo_despesa": item.get("tipoDespesa"),
+                                "tipo_documento": item.get("tipoDocumento"),
+                                "data_documento": _data(
+                                    item.get("dataDocumento")
+                                ),
+                                "fornecedor": item.get("nomeFornecedor"),
+                                "cnpj_cpf_fornecedor": item.get(
+                                    "cnpjCpfFornecedor"
+                                ),
+                                "valor_documento": _decimal(
+                                    item.get("valorDocumento")
+                                ),
+                                "valor_liquido": _decimal(
+                                    item.get("valorLiquido")
+                                ),
+                                "url_documento": item.get("urlDocumento"),
+                                "origem": FONTE,
+                                "dados_origem": item,
+                            }
+
+                            if despesa is None:
+                                db.session.add(
+                                    DespesaCamara(
+                                        chave_origem=chave,
+                                        **campos,
+                                    )
+                                )
+                                novos += 1
+                            elif _atualizar_campos(despesa, campos):
+                                atualizados += 1
+
+                        # Cada deputado/ano é confirmado separadamente.
+                        db.session.commit()
+
+                    except Exception as exc:
+                        falhas += 1
+                        db.session.rollback()
+
+                        print(
+                            f"[DESPESAS] Erro ao salvar despesas do "
+                            f"deputado {id_deputado}, ano {ano}: {exc}"
+                        )
+                        continue
+
+                if indice % 25 == 0 or indice == total:
+                    print(
+                        f"[DESPESAS] Progresso: {indice}/{total} "
+                        f"deputados. Falhas: {falhas}."
+                    )
+
+            if falhas:
+                print(
+                    f"[DESPESAS] Finalizado com {falhas} falha(s). "
+                    "As consultas com erro poderão ser tentadas "
+                    "novamente na próxima atualização."
+                )
+            else:
+                print(
+                    "[DESPESAS] Todas as consultas foram concluídas "
+                    "sem falhas."
+                )
 
             return lidos, novos, atualizados
 
@@ -485,9 +668,7 @@ class CamaraSyncService:
                     }
 
                     if prop is None:
-                        db.session.add(
-                            ProposicaoCamara(**campos)
-                        )
+                        db.session.add(ProposicaoCamara(**campos))
                         novos += 1
                     elif _atualizar_campos(prop, campos):
                         atualizados += 1
@@ -575,7 +756,6 @@ class CamaraSyncService:
                             or ""
                         )
 
-                        # Normaliza todos os valores para a restrição do PostgreSQL.
                         chave_voto = str(voto_original).strip().casefold()
 
                         mapa_votos = {
@@ -596,7 +776,6 @@ class CamaraSyncService:
                             "nao_informado",
                         )
 
-                        # Garantia final: somente valores aceitos pelo banco.
                         valores_permitidos = {
                             "sim",
                             "nao",
@@ -648,6 +827,7 @@ class CamaraSyncService:
                             novos += 1
                         else:
                             alterou = False
+
                             for nome, valor in campos.items():
                                 if valor is not None and getattr(
                                     existente, nome
