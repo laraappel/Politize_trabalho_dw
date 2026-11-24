@@ -55,6 +55,14 @@ def test_importa_candidato_e_expoe_ano_situacao_e_fonte():
             assert lista["total"] == 1
             assert lista["items"][0]["ano_eleicao"] == 2024
             assert lista["items"][0]["situacao"] == "ELEITO"
+            filtrado_partido = client.get(
+                "/api/cargos-eletivos?ano=2024&cargo=Prefeito&uf=SC&partido=pt&q=Candidata%20Integração"
+            ).get_json()
+            assert filtrado_partido["total"] == 1
+            filtrado_outro_partido = client.get(
+                "/api/cargos-eletivos?ano=2024&cargo=Prefeito&uf=SC&partido=PL&q=Candidata%20Integração"
+            ).get_json()
+            assert filtrado_outro_partido["total"] == 0
             candidatura = client.get(f"/api/politicos/{politico_id}/candidaturas").get_json()
             assert candidatura["items"][0]["ano"] == 2024
             assert candidatura["items"][0]["resultado"] == "ELEITO"

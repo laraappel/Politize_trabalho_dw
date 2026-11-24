@@ -17,6 +17,7 @@ def listar_cargos(args):
 
     cargo = _texto(args, "cargo")
     esfera = _texto(args, "esfera")
+    partido = _texto(args, "partido")
     uf = (_texto(args, "uf") or "").upper() or None
     municipio = _texto(args, "municipio")
     situacao = _texto(args, "situacao")
@@ -27,6 +28,8 @@ def listar_cargos(args):
         base = base.where(func.lower(CargoEletivo.cargo) == cargo.lower())
     if esfera:
         base = base.where(CargoEletivo.esfera == esfera.lower())
+    if partido:
+        base = base.where(func.upper(func.trim(CargoEletivo.partido)) == partido.upper())
     if uf:
         base = base.where(CargoEletivo.uf == uf)
     if municipio:
