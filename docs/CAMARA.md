@@ -27,7 +27,7 @@ O módulo reaproveita a tabela `politicos` já criada pelo módulo de notícias,
 Execute dentro do container backend:
 
 ```bash
-# Aplicar a migration 003 (o comando também mantém o comportamento anterior do projeto)
+# Aplicar migrações pendentes e sincronizar o cadastro de veículos de notícias
 docker compose exec backend flask --app wsgi migrate
 
 # Carga inicial; por padrão consulta o ano atual para despesas e proposições

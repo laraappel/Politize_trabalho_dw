@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { listarDeputadosCamara, listarPartidosCamara } from "../api/camara";
 import { listarCargosEletivos, obterFiltrosCargosEletivos } from "../api/cargos";
+import PoliticoAvatar from "../components/PoliticoAvatar";
 
 const PER_PAGE = 10;
 const CHAVES = ["q", "cargo", "partido", "uf", "ano"];
@@ -123,7 +124,7 @@ function PoliticosPage() {
       </header>
 
       {erroFiltros && <p role="alert" className="status-error">Não foi possível carregar as opções de filtro: {erroFiltros}</p>}
-      <form className="politicos-filtros" onSubmit={(e) => e.preventDefault()} aria-label="Filtros de políticos">
+      <form className="politicos-filtros" onSubmit={(e) => e.preventDefault()} role="search" aria-label="Filtros de políticos">
         <label>
           Nome
           <input
@@ -200,19 +201,20 @@ function PoliticosPage() {
         <ul className="politicos-lista">
           {data.items.map((p) => (
             <li key={p.id} className="politicos-card">
-              <div>
+              <PoliticoAvatar politico={p} />
+              <div className="politicos-card-content">
                 <h2>
                   <Link to={`/politicos/${p.id}`}>{p.nome_exibicao}</Link>
                 </h2>
-                <p>
-                  {[p.cargo, p.partido, p.uf].filter(Boolean).join(" · ")}
+                <p className="politicos-card-meta">
+                  {[p.cargo, p.partido, p.uf].filter(Boolean).join(" · ") || "Dados de cargo indisponíveis"}
                 </p>
                 {p.ano_eleicao && (
-                  <p>Eleição {p.ano_eleicao}{p.situacao_eleitoral ? ` · ${p.situacao_eleitoral}` : ""}</p>
+                  <p className="politicos-card-election">Eleição {p.ano_eleicao}{p.situacao_eleitoral ? ` · ${p.situacao_eleitoral}` : ""}</p>
                 )}
               </div>
-              <Link className="button button-secondary" to={`/politicos/${p.id}`}>
-                Ver perfil
+              <Link className="button button-secondary politicos-card-link" to={`/politicos/${p.id}`} aria-label={`Ver perfil de ${p.nome_exibicao}`}>
+                Ver perfil <span aria-hidden="true">→</span>
               </Link>
             </li>
           ))}

@@ -4,7 +4,8 @@
 
 ```powershell
 if (-not (Test-Path .env)) { Copy-Item .env.example .env }
-docker compose up --build
+docker compose up --build -d
+docker compose ps
 ```
 
 Recarga automática:
@@ -44,7 +45,7 @@ Estados esperados: `healthy`.
 | Backend | 5001 | 5000 |
 | PostgreSQL | 5433 | 5432 |
 
-O navegador usa `VITE_API_URL=http://localhost:5001`. A URL `DATABASE_URL` do backend usa o host `db` e a porta interna `5432`. Se alterar `BACKEND_PORT`, atualize `VITE_API_URL` para a mesma porta publicada.
+Esses valores correspondem ao `.env.example`. O navegador usa `VITE_API_URL=http://localhost:5001`; `DATABASE_URL` usa o hostname interno `db` e a porta `5432`. Se alterar `BACKEND_PORT`, atualize `VITE_API_URL` para a porta publicada. Se alterar `FRONTEND_PORT`, atualize `FRONTEND_ORIGIN`. Reinicie o frontend depois de mudar variáveis consumidas pelo Vite.
 
 ## Dados e testes
 
@@ -58,6 +59,12 @@ docker compose exec -T frontend npm run build
 ```
 
 O `-c /app/pytest.ini` carrega a configuração e o caminho de importação Python do container; sem ele, o pytest iniciado apontando para `/tests` não encontra o pacote `app`.
+
+## Limites de segurança
+
+Este Compose é para desenvolvimento local: usa o servidor de desenvolvimento do Flask, `FLASK_DEBUG=1` no exemplo, e as rotas públicas de leitura não exigem autenticação. Não exponha as portas em uma rede pública nem use os valores de exemplo como segredos de produção. `SECRET_KEY` e `ADMIN_TOKEN` devem ser fortes e privados; nunca inclua o token administrativo em variáveis `VITE_*` ou no código do navegador. As operações editoriais de notícias são protegidas por `X-Admin-Token`; as demais rotas não têm autenticação de usuário.
+
+O CORS aceita apenas as origens configuradas em `FRONTEND_ORIGIN` e não permite credenciais. Isso não substitui autenticação, TLS ou controles de acesso para implantação pública. O arquivo `.env` contém valores locais e não deve ser commitado.
 
 ## Windows
 

@@ -8,6 +8,7 @@ import {
 } from "../api/colinha";
 import NoticiasDoPolitico from "../components/NoticiasDoPolitico";
 import DadoAusente from "../components/DadoAusente";
+import PoliticoAvatar from "../components/PoliticoAvatar";
 import SeloDemonstracao from "../components/SeloDemonstracao";
 import {
   formatarData,
@@ -140,23 +141,32 @@ function PoliticoPerfilPage() {
     <section className="page politico-perfil">
 
       {/* PERFIL */}
-      <header className="page-header">
-        <p className="eyebrow">Perfil do político</p>
+      <header className="page-header politico-hero">
+        <div className="politico-hero-intro">
+          <PoliticoAvatar
+            politico={{ ...p, url_foto: camara?.historico?.find((evento) => evento.url_foto)?.url_foto }}
+            tamanho="perfil"
+            prioridade
+          />
+          <div className="politico-hero-copy">
+            <p className="eyebrow">Perfil do político</p>
 
-        <h1>
-          {p.nome_exibicao || (
-            <DadoAusente texto="Nome não informado" />
-          )}
+            <h1>
+              {p.nome_exibicao || (
+                <DadoAusente texto="Nome não informado" />
+              )}
 
-          <SeloDemonstracao visivel={p.demonstracao} />
-        </h1>
+              <SeloDemonstracao visivel={p.demonstracao} />
+            </h1>
 
-        <p className="lede">
-          {p.cargo || "Cargo não informado"}
-          {p.partido ? ` · ${p.partido}` : ""}
-          {p.uf ? ` · ${p.uf}` : ""}
-          {p.municipio ? ` · ${p.municipio}` : ""}
-        </p>
+            <p className="lede">
+              {p.cargo || "Cargo não informado"}
+              {p.partido ? ` · ${p.partido}` : ""}
+              {p.uf ? ` · ${p.uf}` : ""}
+              {p.municipio ? ` · ${p.municipio}` : ""}
+            </p>
+          </div>
+        </div>
 
         <Fonte registro={p} />
 
