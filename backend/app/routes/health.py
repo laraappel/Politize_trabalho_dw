@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, current_app
 from sqlalchemy import text
 
 from app.extensions import db
@@ -11,8 +11,11 @@ def check_database():
         db.session.execute(text("SELECT 1"))
         return {"status": "ok"}
     except Exception:
+        current_app.logger.exception(
+            "ERRO AO CONECTAR AO BANCO DE DADOS"
+        )
+        db.session.rollback()
         return {"status": "unavailable"}
-
 
 @health_bp.get("/health")
 def health():
