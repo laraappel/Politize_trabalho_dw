@@ -26,7 +26,7 @@ O frontend pode ser publicado no GitHub Pages ou na Vercel; a API Flask é prepa
 
 Acesse:
 
-- Aplicação: http://localhost:3000
+- Aplicação: http://localhost:3001
 - Saúde da API e do banco: http://localhost:5001/api/health
 
 O exemplo publica o backend em `5001` e o PostgreSQL em `5433`; dentro da rede Docker, Flask e PostgreSQL escutam em `5000` e `5432`. Se alterar `BACKEND_PORT`, atualize `VITE_API_URL` para a mesma porta publicada e `FRONTEND_ORIGIN` para a origem efetiva do frontend. Reinicie o serviço frontend depois de alterar variáveis Vite. `DATABASE_URL` usa `db:5432` dentro do Compose e não deve usar a porta publicada no host.
