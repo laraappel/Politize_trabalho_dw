@@ -13,6 +13,7 @@ O projeto foi desenvolvido pelo seguinte grupo:
 | **Kaiky Vieira** | Desenvolvimento da funcionalidade Minha Colinha Eleitoral em conjunto com a equipe e implementação das páginas individuais dos políticos, organizando a apresentação das informações de cada representante. |
 | **Marya Reis** | Desenvolvimento da funcionalidade Minha Colinha Eleitoral em React e JavaScript, incluindo pesquisa e seleção de candidatos, organização das escolhas por cargo, edição e remoção de escolhas, armazenamento local e versão para impressão. |
 | **Wesly Ribeiro** | Integração final dos módulos do sistema; auditoria da estrutura do projeto; verificação da comunicação entre frontend, backend e banco de dados; identificação e correção de incompatibilidades; revisão de configurações, testes e documentação técnica. |
+| **Kaua Nunes** | Documentação técnica do projeto; Marketing do projeto, produção do vídeo apresentador do trabalho. |
 
 As atividades relacionadas à Colinha Eleitoral foram desenvolvidas de forma complementar por Kaiky Vieira e Marya Reis. A descrição acima resume as responsabilidades informadas pela equipe.
 
