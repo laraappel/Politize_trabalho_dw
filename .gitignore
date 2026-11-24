@@ -31,6 +31,7 @@ frontend/dist/
 frontend/.vite/
 node_modules/
 dist/
+.vercel/
 
 # IDE e SO
 .idea/

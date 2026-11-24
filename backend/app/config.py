@@ -1,10 +1,26 @@
 import os
 
 
+def _database_url(variable="DATABASE_URL"):
+    url = os.getenv(variable)
+    if not url:
+        return None
+    if url.startswith("postgres://"):
+        return "postgresql+psycopg://" + url.removeprefix("postgres://")
+    if url.startswith("postgresql://"):
+        return "postgresql+psycopg://" + url.removeprefix("postgresql://")
+    return url
+
+
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-me")
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = _database_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
+    if os.getenv("VERCEL") == "1":
+        SQLALCHEMY_ENGINE_OPTIONS.update(
+            {"pool_size": 1, "max_overflow": 0, "pool_recycle": 300}
+        )
     FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
     JSON_SORT_KEYS = False
     # Módulo de notícias: ver docs/NOTICIAS.md
@@ -21,4 +37,4 @@ class Config:
 
 class TestConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.getenv("TEST_DATABASE_URL", os.getenv("DATABASE_URL"))
+    SQLALCHEMY_DATABASE_URI = _database_url("TEST_DATABASE_URL") or _database_url()

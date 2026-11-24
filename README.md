@@ -20,6 +20,10 @@ docker compose ps
 
 Na primeira execução, o Compose baixa/constrói os serviços, aplica as migrações e importa `database/seeds/demonstracao.json` quando `IMPORTAR_DADOS_DEMO=1`. Aguarde `db`, `backend` e `frontend` ficarem `healthy`.
 
+## Publicação
+
+O frontend pode ser publicado no GitHub Pages ou na Vercel; a API Flask é preparada para a Vercel com PostgreSQL externo. Consulte [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) para as configurações, variáveis de ambiente e passos manuais de inicialização do banco. O Docker Compose permanece como ambiente de desenvolvimento local.
+
 Acesse:
 
 - Aplicação: http://localhost:3000

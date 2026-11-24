@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getHealth } from "../api/client";
 import {
   IconBalance,
   IconChecklist,
@@ -10,14 +8,6 @@ import {
 } from "../components/icons";
 
 function HomePage() {
-  const [health, setHealth] = useState({ state: "loading" });
-
-  useEffect(() => {
-    getHealth()
-      .then((data) => setHealth({ state: "ready", data }))
-      .catch(() => setHealth({ state: "error" }));
-  }, []);
-
   return (
     <section className="page home">
       <div className="home-hero-grid">
@@ -41,27 +31,6 @@ function HomePage() {
           </div>
         </header>
 
-        <aside className="status-card home-status" aria-live="polite">
-          <span className="home-status-mark" aria-hidden="true">VT</span>
-          <p className="eyebrow">Serviço</p>
-          <h2>Status da plataforma</h2>
-          {health.state === "loading" && <p role="status">Verificando conexão com os dados...</p>}
-          {health.state === "error" && (
-            <p className="status-error" role="status">Não foi possível consultar o status da API.</p>
-          )}
-          {health.state === "ready" && (
-            <dl className="status-list">
-              <div>
-                <dt>API</dt>
-                <dd><span className={`status-dot status-${health.data.api.status}`} />{health.data.api.status}</dd>
-              </div>
-              <div>
-                <dt>Banco de dados</dt>
-                <dd><span className={`status-dot status-${health.data.database.status}`} />{health.data.database.status}</dd>
-              </div>
-            </dl>
-          )}
-        </aside>
       </div>
 
       <section className="home-explore" aria-labelledby="home-explore-title">
