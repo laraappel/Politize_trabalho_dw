@@ -1,11 +1,15 @@
 """Listagem, filtros e perfil de políticos com relações de domínio."""
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import selectinload
+import re
 
 from app.dominio_constantes import UFS
 from app.errors import ErroValidacao
 from app.extensions import db
 from app.models.dominio import Despesa, Mandato, Projeto, Votacao
+from app.models.camara import HistoricoCamara, MandatoCamara
+from app.models.cargo_eletivo import CargoEletivo
+from app.models.dominios_eleitorais_transparencia import Candidatura
 from app.models.politico import Politico
 from app.paginacao import data_iso, envelope, escapar_like, pagina
 from app.serializacao import dinheiro, iso, origem
@@ -45,6 +49,7 @@ def serializar_resumo(p: Politico) -> dict:
         "id_senado": p.id_senado,
     }
     dados.update(origem(p))
+    dados["ano_referencia"] = _ano_fonte_politico(p) if p.origem_dados == "oficial" else None
     return dados
 
 
@@ -62,7 +67,146 @@ def serializar_mandato(m: Mandato) -> dict:
         "em_curso": m.fim is None,
     }
     dados.update(origem(m))
+    dados["ano_referencia"] = m.inicio.year if m.inicio else None
     return dados
+
+
+def _ano_referencia(valor):
+    return valor.year if valor else None
+
+
+def _ano_fonte_politico(p: Politico):
+    match = re.search(r"candidatos-(\d{4})", p.fonte_url or "")
+    if match:
+        return int(match.group(1))
+    return _ano_referencia(p.atualizado_em or p.coletado_em)
+
+
+def _serializar_cargo_oficial(item: CargoEletivo) -> dict:
+    return {
+        "id": item.id,
+        "cargo": item.cargo,
+        "esfera": item.esfera,
+        "partido": item.partido,
+        "uf": item.uf,
+        "municipio": item.municipio,
+        "ano_eleicao": item.ano_eleicao,
+        "ano_inicio": item.ano_inicio,
+        "ano_fim": item.ano_fim,
+        "situacao": item.situacao,
+        "origem": item.origem,
+        "ano_referencia": item.ano_eleicao or _ano_referencia(item.atualizado_em),
+        "fonte": {"nome": item.fonte_nome, "url": item.fonte_url},
+    }
+
+
+def _serializar_candidatura_oficial(item: Candidatura) -> dict:
+    return {
+        "id": item.id,
+        "cargo": item.cargo,
+        "partido": item.sigla_partido or (item.partido.sigla if item.partido else None),
+        "uf": item.uf,
+        "municipio": item.municipio,
+        "ano_eleicao": item.ano,
+        "situacao": item.resultado,
+        "nome_urna": item.nome_urna,
+        "numero_candidatura": item.numero_candidatura,
+        "ano_referencia": item.ano,
+        "fonte": {"nome": item.fonte_nome, "url": item.fonte_url},
+    }
+
+
+def _perfil_oficial(p: Politico) -> dict:
+    cargos = db.session.scalars(
+        select(CargoEletivo)
+        .where(CargoEletivo.politico_id == p.id, CargoEletivo.fonte_url.is_not(None))
+        .order_by(CargoEletivo.ano_eleicao.desc().nullslast(), CargoEletivo.atualizado_em.desc())
+    ).all()
+    candidaturas = db.session.scalars(
+        select(Candidatura)
+        .where(
+            Candidatura.politico_id == p.id,
+            Candidatura.origem_dados == "oficial",
+            Candidatura.fonte_nome.is_not(None),
+            Candidatura.fonte_url.is_not(None),
+        )
+        .order_by(Candidatura.ano.desc(), Candidatura.cargo)
+    ).all()
+    mandatos = db.session.scalars(
+        select(Mandato)
+        .where(
+            Mandato.politico_id == p.id,
+            Mandato.origem_dados == "oficial",
+            Mandato.fonte_nome.is_not(None),
+            Mandato.fonte_url.is_not(None),
+        )
+        .order_by(Mandato.inicio.desc())
+    ).all()
+
+    mandatos_camara = []
+    eventos_camara = []
+    if p.id_camara is not None:
+        mandatos_camara = db.session.scalars(
+            select(MandatoCamara)
+            .where(MandatoCamara.politico_id == p.id)
+            .order_by(MandatoCamara.data_inicio.desc().nullslast())
+        ).all()
+        eventos_camara = db.session.scalars(
+            select(HistoricoCamara)
+            .where(HistoricoCamara.politico_id == p.id)
+            .order_by(HistoricoCamara.data_hora.desc().nullslast(), HistoricoCamara.id.desc())
+        ).all()
+
+    fonte_camara = "https://dadosabertos.camara.leg.br/api/v2/deputados"
+    historico_camara = f"{fonte_camara}/{p.id_camara}/historico" if p.id_camara else None
+    mandatos_payload = [{
+        "cargo": "Deputado federal",
+        "esfera": "federal",
+        "legislatura": item.id_legislatura,
+        "inicio": iso(item.data_inicio),
+        "fim": iso(item.data_fim),
+        "partido": item.partido_sigla,
+        "uf": item.uf,
+        "situacao": item.situacao,
+        "ano_referencia": _ano_referencia(item.data_inicio) or _ano_referencia(item.data_fim),
+        "fonte": {"nome": "Câmara dos Deputados", "url": historico_camara},
+    } for item in mandatos_camara]
+    mandatos_payload.extend(serializar_mandato(item) for item in mandatos)
+
+    eventos_payload = [{
+        "legislatura": item.id_legislatura,
+        "data": iso(item.data_hora),
+        "nome": item.nome_eleitoral or item.nome,
+        "partido": item.sigla_partido,
+        "uf": item.sigla_uf,
+        "situacao": item.situacao,
+        "condicao_eleitoral": item.condicao_eleitoral,
+        "descricao_status": item.descricao_status,
+        "ano_referencia": _ano_referencia(item.data_hora),
+        "fonte": {
+            "nome": "Câmara dos Deputados",
+            "url": item.uri_origem or historico_camara,
+        },
+    } for item in eventos_camara]
+
+    identificacao = None
+    if p.origem_dados == "oficial" and p.fonte_nome and p.fonte_url:
+        identificacao = {
+            "cargo": p.cargo,
+            "partido": p.partido,
+            "uf": p.uf,
+            "municipio": p.municipio,
+            "ano_referencia": _ano_fonte_politico(p),
+            "fonte": {"nome": p.fonte_nome, "url": p.fonte_url},
+        }
+
+    return {
+        "identificacao": identificacao,
+        "cargos": [_serializar_cargo_oficial(item) for item in cargos],
+        "candidaturas": [_serializar_candidatura_oficial(item) for item in candidaturas],
+        "mandatos": mandatos_payload,
+        "historico": eventos_payload,
+    }
 
 
 def serializar_projeto(pr: Projeto) -> dict:
@@ -222,6 +366,7 @@ def detalhe(politico_id: int) -> dict | None:
 
     dados = serializar_resumo(p)
     dados["apelidos"] = list(p.apelidos or [])
+    dados["dados_oficiais"] = _perfil_oficial(p)
     dados["mandatos"] = [serializar_mandato(m) for m in p.mandatos]
     dados["projetos"] = [serializar_projeto(pr) for pr in p.projetos]
     dados["votacoes"] = [serializar_votacao(v) for v in p.votacoes]

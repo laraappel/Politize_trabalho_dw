@@ -133,6 +133,11 @@ def test_importacao_idempotente_filtros_e_dados_ausentes(app):
     perfil = c.get(f"/api/politicos/{pid}").get_json()
     assert perfil["id"] == pid
     assert len(perfil["mandatos"]) == 1
+    assert perfil["dados_oficiais"]["identificacao"] is None
+    assert perfil["dados_oficiais"]["cargos"] == []
+    assert perfil["dados_oficiais"]["candidaturas"] == []
+    assert perfil["dados_oficiais"]["mandatos"] == []
+    assert perfil["dados_oficiais"]["historico"] == []
     assert len(perfil["projetos"]) == 1
     assert perfil["votacoes"][0]["voto"] is None
     financeiro = perfil["resumo_financeiro"]
@@ -150,7 +155,11 @@ def test_importacao_idempotente_filtros_e_dados_ausentes(app):
     assert noticias["total"] >= 1
     assert all(any(pol["id"] == pid for pol in n["politicos"]) for n in noticias["items"])
 
-    despesas = c.get(f"/api/transparencia/despesas?uf=GO&categoria=consultoria").get_json()
+    despesas = c.get(f"/api/transparencia/despesas?uf=GO&categoria=consultoria&per_page=1").get_json()
+    assert despesas["total"] == 1
+    assert despesas["per_page"] == 1
+    assert despesas["resumo_financeiro"]["registros"] == 1
+    assert despesas["resumo_financeiro"]["registros_sem_valor"] == 1
     valores = [i["valor"] for i in despesas["items"] if i["politico"] and i["politico"]["id"] == pid]
     assert None in valores
     assert "0.00" not in valores

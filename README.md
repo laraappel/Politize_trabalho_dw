@@ -43,7 +43,7 @@ Esse comando preserva o volume do PostgreSQL. **`docker compose down -v` apaga o
 - Perfil com mandatos, projetos, votações, despesas, fontes e notícias relacionadas.
 - Transparência com filtros de despesas por categoria, UF e período; valores ausentes permanecem ausentes.
 - Notícias com filtros, classificação contextual, links para as matérias e coleta manual de fontes autorizadas.
-- Colinha eleitoral privada armazenada apenas no `localStorage` do navegador.
+- Colinha eleitoral por ano e cargo, com busca por nome/número/partido, edição, remoção e impressão; escolhas e anotações ficam apenas no `localStorage` do navegador.
 - Importação idempotente de pacotes JSON de demonstração ou oficiais.
 - Consulta dos dados importados da Câmara dos Deputados. A carga é manual e está descrita em `docs/CAMARA.md`.
 - Importação oficial dos resultados eleitorais do TSE para candidatos eleitos em 2022 e 2024, com ano e situação eleitoral. Consulte `docs/TSE.md`.

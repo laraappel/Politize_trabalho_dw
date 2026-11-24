@@ -473,3 +473,268 @@ a {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* ---- Colinha eleitoral privada ---- */
+.colinha-pagina h2 {
+  margin: 0.25rem 0 0.8rem;
+}
+
+.colinha-aviso {
+  color: var(--navy-dark);
+}
+
+.colinha-busca,
+.colinha-grupo {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.colinha-busca {
+  margin: 1.75rem 0 2.5rem;
+  scroll-margin-top: 6rem;
+}
+
+.colinha-filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 0.9rem;
+  align-items: end;
+  margin-top: 1rem;
+}
+
+.colinha-filtros label,
+.colinha-anotacao {
+  display: grid;
+  gap: 0.3rem;
+  color: var(--navy);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.colinha-filtros input,
+.colinha-filtros select,
+.colinha-anotacao textarea {
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  font-weight: 400;
+  color: var(--ink);
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+}
+
+.colinha-termo {
+  grid-column: span 2;
+}
+
+.colinha-busca-acoes,
+.colinha-acoes,
+.colinha-paginacao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.colinha-busca-acoes {
+  grid-column: 1 / -1;
+}
+
+.colinha-pagina button {
+  cursor: pointer;
+}
+
+.colinha-pagina button:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+}
+
+.colinha-contagem,
+.colinha-status {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.colinha-resultados,
+.colinha-escolhas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.colinha-resultados {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.colinha-candidato,
+.colinha-escolha {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+}
+
+.colinha-candidato {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: white;
+}
+
+.colinha-candidato h3,
+.colinha-escolha h4 {
+  margin: 0;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-size: 1.05rem;
+}
+
+.colinha-candidato h3 a,
+.colinha-escolha h4 a {
+  color: var(--navy-dark);
+}
+
+.colinha-detalhes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.8rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin: 0.25rem 0 0;
+}
+
+.colinha-paginacao {
+  justify-content: center;
+  margin-top: 1rem;
+  color: var(--muted);
+}
+
+.colinha-lista-cabecalho,
+.colinha-escolha-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.colinha-lista-cabecalho h2 span {
+  color: var(--muted);
+  font: 600 0.9rem "Source Sans 3", "Segoe UI", sans-serif;
+}
+
+.colinha-grupo {
+  margin: 1rem 0;
+}
+
+.colinha-grupo > h3 {
+  margin: 0 0 0.8rem;
+  font-size: 1.2rem;
+}
+
+.colinha-grupo > h3 span {
+  color: var(--teal);
+}
+
+.colinha-escolhas {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.colinha-escolha {
+  background: white;
+}
+
+.colinha-anotacao {
+  margin-top: 0.8rem;
+}
+
+.colinha-anotacao textarea {
+  resize: vertical;
+}
+
+.colinha-vazia {
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+@media (max-width: 640px) {
+  .colinha-termo {
+    grid-column: auto;
+  }
+
+  .colinha-candidato,
+  .colinha-escolha-cabecalho,
+  .colinha-lista-cabecalho {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .colinha-acoes {
+    width: 100%;
+  }
+}
+
+@media print {
+  @page {
+    margin: 1.4cm;
+  }
+
+  body,
+  .app-shell,
+  .site-main {
+    background: white !important;
+    color: black !important;
+  }
+
+  .site-header,
+  .site-footer,
+  .colinha-aviso,
+  .colinha-busca,
+  .colinha-nao-imprimir,
+  .colinha-acoes,
+  .colinha-vazia {
+    display: none !important;
+  }
+
+  .site-main,
+  .colinha-pagina {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .page-header h1,
+  .colinha-pagina h2,
+  .colinha-grupo > h3,
+  .colinha-escolha h4 {
+    color: black !important;
+  }
+
+  .colinha-grupo,
+  .colinha-escolha {
+    break-inside: avoid;
+    box-shadow: none;
+    border-color: #999;
+  }
+
+  .colinha-escolha a {
+    color: black;
+    text-decoration: none;
+  }
+
+  .colinha-anotacao textarea {
+    border: 0;
+    border-radius: 0;
+    padding: 0.2rem 0;
+    color: black;
+    resize: none;
+  }
+}

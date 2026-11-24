@@ -6,39 +6,32 @@ from app.models.dominio import Mandato, Projeto, Votacao
 from app.models.politico import Politico
 from app.paginacao import envelope, pagina
 from app.services.despesas import (
-    listar_despesas_unificadas,
-    resumo_financeiro,
+    _consulta_unificada_despesas,
+    listar_despesas_paginadas,
 )
 
 
 def listar_despesas(args) -> dict:
-    todas = listar_despesas_unificadas(args=args)
-    total = len(todas)
     page, per_page = pagina(args)
-    inicio = (page - 1) * per_page
+    itens, total, resumo = listar_despesas_paginadas(args, page, per_page)
 
     return envelope(
-        todas[inicio:inicio + per_page],
+        itens,
         total,
         page,
         per_page,
-        resumo_financeiro=resumo_financeiro(todas),
+        resumo_financeiro=resumo,
     )
 
 
 def listar_filtros() -> dict:
-    despesas = listar_despesas_unificadas()
-
-    categorias = sorted({
-        item["categoria"]
-        for item in despesas
-        if item.get("categoria")
-    })
-    ufs = sorted({
-        item["politico"]["uf"]
-        for item in despesas
-        if item.get("politico") and item["politico"].get("uf")
-    })
+    despesas = _consulta_unificada_despesas()
+    categorias = db.session.scalars(
+        select(despesas.c.categoria).where(despesas.c.categoria.is_not(None)).distinct().order_by(despesas.c.categoria)
+    ).all()
+    ufs = db.session.scalars(
+        select(despesas.c.uf).where(despesas.c.uf.is_not(None)).distinct().order_by(despesas.c.uf)
+    ).all()
 
     return {
         "categorias": categorias,
@@ -57,7 +50,7 @@ def panorama() -> dict:
         .where(Politico.origem_dados == "demonstracao")
     ) or 0
 
-    despesas = listar_despesas_unificadas()
+    _, _, despesas = listar_despesas_paginadas({}, 1, 1)
 
     return {
         "politicos": politicos,
@@ -71,7 +64,7 @@ def panorama() -> dict:
         "votacoes": db.session.scalar(
             select(func.count()).select_from(Votacao)
         ) or 0,
-        "despesas": resumo_financeiro(despesas),
+        "despesas": despesas,
         "aviso": (
             "Contagens refletem o cadastro atual. "
             "Aus?ncia de despesa n?o significa gasto zero."

@@ -17,13 +17,13 @@ Base local no navegador: `http://localhost:5001/api`. O frontend usa `VITE_API_U
 | `GET /health` | Estado da API e do banco; retorna 503 quando o banco está indisponível. |
 | `GET /politicos` | Filtros `q`, `cargo`, `partido`, `uf`, `page`, `per_page`; lista resumida paginada. |
 | `GET /politicos/filtros` | Opções `cargos`, `partidos`, `ufs`. |
-| `GET /politicos/<id>` | Perfil e relações `mandatos`, `projetos`, `votacoes`, `despesas`, `resumo_financeiro`. |
+| `GET /politicos/<id>` | Perfil e relações `mandatos`, `projetos`, `votacoes`, `despesas`, `resumo_financeiro`; `dados_oficiais` contém identificação, cargos, candidaturas/resultados, mandatos e eventos oficiais com fonte e ano de referência. |
 | `GET /politicos/<id>/mandatos` | Mandatos paginados. |
 | `GET /politicos/<id>/projetos` | Projetos paginados. |
 | `GET /politicos/<id>/votacoes` | Votações paginadas. |
 | `GET /politicos/<id>/despesas` | Despesas paginadas; aceita `categoria`, `de`, `ate`. |
 | `GET /politicos/<id>/candidaturas` | Histórico eleitoral paginado, com ano da eleição, cargo, situação e fonte. |
-| `GET /cargos-eletivos` | Cargos eletivos; filtros `q`, `cargo`, `esfera`, `uf`, `municipio`, `situacao`, `ano`, `page`, `per_page`. |
+| `GET /cargos-eletivos` | Cargos eletivos; filtros `q` (nome ou número de urna), `cargo`, `esfera`, `uf`, `municipio` (busca parcial), `situacao`, `ano`, `page`, `per_page`. Os itens incluem `numero_candidato` quando há candidatura oficial associada. |
 | `GET /cargos-eletivos/filtros` | Opções disponíveis de cargo, esfera, UF, município, partido, ano e situação. |
 | `GET /transparencia` | Contagens e resumo agregado do cadastro ativo. |
 | `GET /transparencia/despesas` | Lista paginada; filtros `categoria`, `uf`, `de`, `ate`. |
@@ -57,4 +57,4 @@ O formato e as regras estão em [database/README.md](../database/README.md). O p
 
 ## Integração TSE
 
-Resultados oficiais importados apresentam o ano da eleição e a situação de totalização publicada pelo TSE. A carga é manual e descrita em [docs/TSE.md](TSE.md); os resultados não são inferidos a partir do mandato atual.
+Resultados oficiais importados apresentam o ano da eleição e a situação de totalização publicada pelo TSE. O perfil exibe somente registros oficiais com fonte associada na seção `dados_oficiais`; cada informação tem seu ano de referência e não se infere mandato atual a partir de uma eleição passada. A carga é manual e descrita em [docs/TSE.md](TSE.md).

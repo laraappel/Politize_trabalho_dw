@@ -15,14 +15,12 @@ import {
   rotuloVoto,
 } from "../formatters";
 import { obterDeputadoCamara, listarDespesasDeputadoCamara, listarProposicoesCamara } from "../api/camara";
-import { listarCandidaturasPolitico } from "../api/cargos";
 
 function PoliticoPerfilPage() {
   const { id } = useParams();
 
   const [estado, setEstado] = useState({ status: "loading" });
   const [camara, setCamara] = useState(null);
-  const [candidaturas, setCandidaturas] = useState([]);
   const [naColinha, setNaColinha] = useState(false);
 
   useEffect(() => {
@@ -36,9 +34,6 @@ function PoliticoPerfilPage() {
 
         setEstado({ status: "ready", data });
         setNaColinha(estaNaColinha(data.id));
-        listarCandidaturasPolitico(data.id, { per_page: 50 })
-          .then((response) => ativo && setCandidaturas(response.items || []))
-          .catch(() => ativo && setCandidaturas([]));
 
         if (data.id_camara) {
           obterDeputadoCamara(data.id_camara)
@@ -95,12 +90,17 @@ function PoliticoPerfilPage() {
 
   const p = estado.data;
 
-  const mandatos = p.mandatos || [];
   const projetos = p.projetos || [];
   const votacoes = p.votacoes || [];
   const despesas = p.despesas || [];
   const financeiro = p.resumo_financeiro || {};
   const categorias = financeiro.por_categoria || [];
+  const dadosOficiais = p.dados_oficiais || {};
+  const identificacaoOficial = dadosOficiais.identificacao;
+  const candidaturasOficiais = dadosOficiais.candidaturas || [];
+  const cargosOficiais = dadosOficiais.cargos || [];
+  const mandatosOficiais = dadosOficiais.mandatos || [];
+  const historicoOficial = dadosOficiais.historico || [];
 
   function alternarColinha() {
     if (naColinha) {
@@ -131,6 +131,7 @@ function PoliticoPerfilPage() {
         ) : (
           registro.fonte?.nome || registro.origem_dados
         )}
+        {registro.ano_referencia ? ` · Ano de referência: ${registro.ano_referencia}` : ""}
       </p>
     );
   }
@@ -177,17 +178,47 @@ function PoliticoPerfilPage() {
       </header>
 
       <section>
-        <h2>Histórico eleitoral</h2>
-        {candidaturas.length === 0 ? (
-          <p>Não há candidaturas eleitorais oficiais importadas para este perfil.</p>
+        <h2>Dados oficiais confirmados</h2>
+        {identificacaoOficial ? (
+          <div className="lista-simples">
+            <p>
+              Cadastro oficial: {[identificacaoOficial.cargo, identificacaoOficial.partido,
+                identificacaoOficial.municipio, identificacaoOficial.uf].filter(Boolean).join(" · ") || "Sem campos disponíveis"}
+            </p>
+            <Fonte registro={identificacaoOficial} />
+          </div>
+        ) : (
+          <p>Não há dados oficiais de identificação confirmados para este perfil.</p>
+        )}
+
+        {cargosOficiais.length > 0 && (
+          <>
+            <h3>Cargos e situação registrados</h3>
+            <ul className="lista-simples">
+              {cargosOficiais.map((cargo) => (
+                <li key={`${cargo.origem}-${cargo.id}`}>
+                  <strong>{cargo.cargo}</strong>
+                  <p>Situação registrada: {cargo.situacao || "Não informada"}</p>
+                  <p>Localidade: {[cargo.municipio, cargo.uf].filter(Boolean).join(" - ") || "Não informada"}</p>
+                  <p>Partido: {cargo.partido || "Não informado"}</p>
+                  <Fonte registro={cargo} />
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+        <h3>Histórico eleitoral</h3>
+        {candidaturasOficiais.length === 0 ? (
+          <p>Não há resultados eleitorais oficiais importados para este perfil.</p>
         ) : (
           <ul className="lista-simples">
-            {candidaturas.map((c) => (
+            {candidaturasOficiais.map((c) => (
               <li key={c.id}>
-                <strong>{c.cargo} — eleição {c.ano}</strong>
-                <p>Situação eleitoral: {c.resultado || "Não informada"}</p>
+                <strong>{c.cargo} — eleição {c.ano_eleicao}</strong>
+                <p>Situação eleitoral confirmada: {c.situacao || "Não informada"}</p>
                 <p>Localidade: {[c.municipio, c.uf].filter(Boolean).join(" - ") || "Não informada"}</p>
-                <p>Partido: {c.partido_sigla || c.partido?.sigla || "Não informado"}</p>
+                <p>Partido: {c.partido || "Não informado"}</p>
                 <Fonte registro={c} />
               </li>
             ))}
@@ -197,14 +228,14 @@ function PoliticoPerfilPage() {
 
       {/* MANDATOS */}
       <section>
-        <h2>Histórico de mandatos</h2>
+        <h2>Histórico de mandatos oficiais</h2>
 
-        {mandatos.length === 0 ? (
-          <p>Não existem mandatos cadastrados para este político.</p>
+        {mandatosOficiais.length === 0 ? (
+          <p>Não existem mandatos oficiais com período e fonte confirmados para este político.</p>
         ) : (
           <ul className="lista-simples">
-            {mandatos.map((m) => (
-              <li key={m.id}>
+            {mandatosOficiais.map((m, indice) => (
+              <li key={`${m.fonte?.url || "mandato"}-${m.legislatura || m.inicio || indice}`}>
                 <strong>{m.cargo || "Cargo não informado"}</strong>
 
                 <p>
@@ -224,12 +255,34 @@ function PoliticoPerfilPage() {
                 <p>
                   Período: {formatarData(m.inicio) || "Não informado"}
                   {" — "}
-                  {m.em_curso
-                    ? "Em curso"
-                    : formatarData(m.fim) || "Não informado"}
+                  {formatarData(m.fim) || "Não informado"}
                 </p>
+                {m.legislatura && <p>Legislatura: {m.legislatura}</p>}
+                {m.ano_referencia && <p>Ano de referência: {m.ano_referencia}</p>}
 
                 <Fonte registro={m} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section>
+        <h2>Histórico político oficial</h2>
+        {historicoOficial.length === 0 ? (
+          <p>Não há eventos históricos oficiais importados para este perfil.</p>
+        ) : (
+          <ul className="lista-simples">
+            {historicoOficial.map((evento, indice) => (
+              <li key={`${evento.data || evento.legislatura || "evento"}-${indice}`}>
+                <strong>{evento.descricao_status || evento.situacao || "Registro histórico"}</strong>
+                <p>Data: {formatarData(evento.data) || "Não informada"}</p>
+                <p>Nome eleitoral: {evento.nome || "Não informado"}</p>
+                <p>Partido e UF: {[evento.partido, evento.uf].filter(Boolean).join(" · ") || "Não informados"}</p>
+                <p>Situação: {evento.situacao || "Não informada"}</p>
+                <p>Condição eleitoral: {evento.condicao_eleitoral || "Não informada"}</p>
+                {evento.legislatura && <p>Legislatura: {evento.legislatura}</p>}
+                <Fonte registro={evento} />
               </li>
             ))}
           </ul>

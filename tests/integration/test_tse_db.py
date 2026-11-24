@@ -55,6 +55,12 @@ def test_importa_candidato_e_expoe_ano_situacao_e_fonte():
             assert lista["total"] == 1
             assert lista["items"][0]["ano_eleicao"] == 2024
             assert lista["items"][0]["situacao"] == "ELEITO"
+            assert lista["items"][0]["numero_candidato"] == "13"
+            por_numero = client.get(
+                "/api/cargos-eletivos?ano=2024&cargo=Prefeito&uf=SC&municipio=Cidade%20Integra%C3%A7%C3%A3o&q=13"
+            ).get_json()
+            assert por_numero["total"] == 1
+            assert por_numero["items"][0]["nome"] == "Candidata Integração"
             filtrado_partido = client.get(
                 "/api/cargos-eletivos?ano=2024&cargo=Prefeito&uf=SC&partido=pt&q=Candidata%20Integração"
             ).get_json()
@@ -68,6 +74,14 @@ def test_importa_candidato_e_expoe_ano_situacao_e_fonte():
             assert candidatura["items"][0]["resultado"] == "ELEITO"
             assert candidatura["items"][0]["partido_sigla"] == "PT"
             assert candidatura["items"][0]["fonte"]["nome"] == "Tribunal Superior Eleitoral (TSE)"
+
+            perfil = client.get(f"/api/politicos/{politico_id}").get_json()
+            assert perfil["dados_oficiais"]["identificacao"]["ano_referencia"] == 2024
+            assert perfil["dados_oficiais"]["identificacao"]["fonte"]["nome"] == "Tribunal Superior Eleitoral (TSE)"
+            assert perfil["dados_oficiais"]["cargos"][0]["situacao"] == "ELEITO"
+            assert perfil["dados_oficiais"]["candidaturas"][0]["ano_eleicao"] == 2024
+            assert perfil["dados_oficiais"]["mandatos"] == []
+            assert perfil["dados_oficiais"]["historico"] == []
         finally:
             db.session.execute(text("DELETE FROM cargos_eletivos WHERE origem='tse_2024' AND identificador_externo=:codigo"), {"codigo": CODIGO})
             db.session.execute(text("DELETE FROM candidaturas WHERE politico_id IN (SELECT id FROM politicos WHERE slug=:slug)"), {"slug": SLUG})
