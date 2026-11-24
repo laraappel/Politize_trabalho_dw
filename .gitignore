@@ -1,5 +1,21 @@
-# Ambiente
+# Ambiente e segredos — nunca versionar senhas, tokens ou cópias de configuração
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets*.json
+
+# Arquivos privados e temporários
+*.bak
+*.tmp
+*.zip
+backup_*/
+*.sqlite
+*.sqlite3
+*.db
+
 .venv/
 venv/
 __pycache__/
@@ -13,6 +29,8 @@ htmlcov/
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
+node_modules/
+dist/
 
 # IDE e SO
 .idea/
@@ -21,7 +39,7 @@ frontend/.vite/
 .DS_Store
 Thumbs.db
 
-# Docker
+# Docker e dados locais
 postgres_data/
 
 # Logs
