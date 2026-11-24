@@ -13,6 +13,14 @@ from app.extensions import db
 from app.models.dominio import Despesa, Mandato, Projeto, Votacao
 from app.models.noticia import Noticia, NoticiaPolitico, Veiculo
 from app.models.politico import Politico
+from app.models.partido import Partido
+from app.models.dominios_eleitorais_transparencia import (
+    Candidatura,
+    PatrimonioDeclarado,
+    ProjetoCoautoria,
+    PropostaCampanha,
+    Remuneracao,
+)
 from app.services.noticias.normalizacao import canonicalizar_url, chave_dedup
 
 VEICULO_DEMO = {
@@ -200,13 +208,9 @@ def _upsert_projeto(politico_id, item) -> tuple[Projeto, bool]:
     existente = db.session.scalar(
         select(Projeto).where(Projeto.casa == casa, Projeto.numero == numero, Projeto.ano == ano)
     )
-    if existente is not None and existente.politico_id != politico_id:
-        raise ErroValidacao(
-            "projeto_ja_vinculado",
-            "O projeto já está vinculado a outro político; vínculos de coautoria ainda não são suportados.",
-        )
     pr = existente or Projeto(casa=casa, numero=numero, ano=ano)
-    pr.politico_id = politico_id
+    if existente is None:
+        pr.politico_id = politico_id
     pr.ementa = _texto(item.get("ementa"))
     pr.situacao = _texto(item.get("situacao"), 40)
     pr.data_apresentacao = _data(item.get("data_apresentacao"), "data_apresentacao")
@@ -340,6 +344,132 @@ def _upsert_noticia(politico: Politico, item, veiculo: Veiculo):
     return novo
 
 
+def _upsert_candidatura(politico_id, item):
+    origem = _origem(item)
+    ano = int(item["ano"]) if item.get("ano") is not None else None
+    cargo = _texto(item.get("cargo"), 64)
+    if ano is None or ano < 1890 or not cargo:
+        raise ErroValidacao("parametro_invalido", "Candidatura exige ano e cargo válidos.")
+    uf = _uf(item.get("uf"))
+    municipio = _texto(item.get("municipio"), 120)
+    existente = db.session.scalar(select(Candidatura).where(
+        Candidatura.politico_id == politico_id,
+        Candidatura.ano == ano,
+        Candidatura.cargo == cargo,
+        Candidatura.uf == uf,
+        Candidatura.municipio == municipio,
+    ))
+    c = existente or Candidatura(politico_id=politico_id, ano=ano, cargo=cargo, uf=uf, municipio=municipio)
+    c.nome_urna = _texto(item.get("nome_urna"), 200)
+    c.sigla_partido = _texto(item.get("partido_sigla"), 32)
+    c.numero_candidatura = _texto(item.get("numero_candidatura"), 16)
+    c.resultado = _texto(item.get("resultado"), 32)
+    c.votos = item.get("votos")
+    c.origem_dados = origem
+    c.fonte_nome = _texto(item.get("fonte_nome"), 200)
+    c.fonte_url = _texto(item.get("fonte_url"))
+    if existente is None:
+        db.session.add(c)
+        db.session.flush()
+    return c, existente is None
+
+
+def _upsert_proposta(candidatura, item):
+    origem = _origem(item)
+    titulo = _texto(item.get("titulo"), 255)
+    if not titulo:
+        raise ErroValidacao("parametro_invalido", "Proposta exige titulo.")
+    existente = db.session.scalar(select(PropostaCampanha).where(
+        PropostaCampanha.candidatura_id == candidatura.id,
+        PropostaCampanha.titulo == titulo,
+    ))
+    p = existente or PropostaCampanha(candidatura_id=candidatura.id, titulo=titulo)
+    p.descricao = _texto(item.get("descricao"))
+    p.tema = _texto(item.get("tema"), 64)
+    p.origem_dados = origem
+    p.fonte_nome = _texto(item.get("fonte_nome"), 200)
+    p.fonte_url = _texto(item.get("fonte_url"))
+    if existente is None:
+        db.session.add(p)
+    return existente is None
+
+
+def _upsert_coautoria(projeto, politico_id, item):
+    origem = _origem(item)
+    papel = item.get("papel") or "coautor"
+    if papel not in ("autor", "coautor", "relator"):
+        raise ErroValidacao("parametro_invalido", "Papel de coautoria inválido.")
+    existente = db.session.scalar(select(ProjetoCoautoria).where(
+        ProjetoCoautoria.projeto_id == projeto.id,
+        ProjetoCoautoria.politico_id == politico_id,
+    ))
+    c = existente or ProjetoCoautoria(projeto_id=projeto.id, politico_id=politico_id)
+    c.papel = papel
+    c.origem_dados = origem
+    c.fonte_nome = _texto(item.get("fonte_nome"), 200)
+    c.fonte_url = _texto(item.get("fonte_url"))
+    if existente is None:
+        db.session.add(c)
+    return existente is None
+
+
+def _upsert_remuneracao(politico_id, item):
+    origem = _origem(item)
+    cargo = _texto(item.get("cargo"), 120)
+    inicio = _data(item.get("periodo_inicio") or (item.get("periodo") or {}).get("inicio"), "periodo_inicio")
+    fim = _data(item.get("periodo_fim") or (item.get("periodo") or {}).get("fim"), "periodo_fim")
+    if not inicio or not fim or fim < inicio:
+        raise ErroValidacao("parametro_invalido", "Remuneração exige período válido.")
+    existente = db.session.scalar(select(Remuneracao).where(
+        Remuneracao.politico_id == politico_id,
+        Remuneracao.cargo == cargo,
+        Remuneracao.periodo_inicio == inicio,
+        Remuneracao.periodo_fim == fim,
+    ))
+    r = existente or Remuneracao(politico_id=politico_id, cargo=cargo, periodo_inicio=inicio, periodo_fim=fim)
+    r.valor_bruto = _dinheiro(item.get("valor_bruto"), "valor_bruto")
+    r.beneficios = _dinheiro(item.get("beneficios"), "beneficios")
+    r.descontos = _dinheiro(item.get("descontos"), "descontos")
+    r.valor_liquido = _dinheiro(item.get("valor_liquido"), "valor_liquido")
+    r.origem_dados = origem
+    r.fonte_nome = _texto(item.get("fonte_nome"), 200)
+    r.fonte_url = _texto(item.get("fonte_url"))
+    if existente is None:
+        db.session.add(r)
+    return existente is None
+
+
+def _upsert_patrimonio(politico_id, item):
+    origem = _origem(item)
+    try:
+        ano = int(item["ano_referencia"])
+    except (KeyError, TypeError, ValueError):
+        raise ErroValidacao("parametro_invalido", "Patrimônio exige ano_referencia inteiro.")
+    tipo = _texto(item.get("tipo"), 80)
+    if ano < 1985 or not tipo:
+        raise ErroValidacao("parametro_invalido", "Patrimônio exige ano_referencia e tipo válidos.")
+    c = db.session.get(Candidatura, item["candidatura_id"]) if item.get("candidatura_id") else None
+    if item.get("candidatura_id") and c is None:
+        raise ErroValidacao("parametro_invalido", "candidatura_id inexistente.")
+    existente = db.session.scalar(select(PatrimonioDeclarado).where(
+        PatrimonioDeclarado.politico_id == politico_id,
+        PatrimonioDeclarado.ano_referencia == ano,
+        PatrimonioDeclarado.tipo == tipo,
+        PatrimonioDeclarado.descricao == _texto(item.get("descricao")),
+    ))
+    p = existente or PatrimonioDeclarado(politico_id=politico_id, ano_referencia=ano, tipo=tipo)
+    p.candidatura_id = c.id if c else None
+    p.descricao = _texto(item.get("descricao"))
+    p.valor = _dinheiro(item.get("valor"), "valor")
+    p.localizacao = _texto(item.get("localizacao"), 255)
+    p.origem_dados = origem
+    p.fonte_nome = _texto(item.get("fonte_nome"), 200)
+    p.fonte_url = _texto(item.get("fonte_url"))
+    if existente is None:
+        db.session.add(p)
+    return existente is None
+
+
 def importar_pacote(pacote: dict) -> dict:
     validar_pacote(pacote)
     resumo = {
@@ -350,6 +480,11 @@ def importar_pacote(pacote: dict) -> dict:
         "projetos_novos": 0,
         "votacoes_novas": 0,
         "despesas_novas": 0,
+        "candidaturas_novas": 0,
+        "propostas_novas": 0,
+        "coautorias_novas": 0,
+        "remuneracoes_novas": 0,
+        "patrimonios_novos": 0,
         "noticias_novas": 0,
     }
     veiculo = _veiculo_demo()
@@ -372,6 +507,29 @@ def importar_pacote(pacote: dict) -> dict:
         for d in item.get("despesas") or []:
             if _upsert_despesa(politico.id, d):
                 resumo["despesas_novas"] += 1
+        for cand in item.get("candidaturas") or []:
+            c, criado = _upsert_candidatura(politico.id, cand)
+            if criado:
+                resumo["candidaturas_novas"] += 1
+            for proposta in cand.get("propostas") or []:
+                if _upsert_proposta(c, proposta):
+                    resumo["propostas_novas"] += 1
+        for rem in item.get("remuneracoes") or []:
+            if _upsert_remuneracao(politico.id, rem):
+                resumo["remuneracoes_novas"] += 1
+        for bem in item.get("patrimonio") or []:
+            if _upsert_patrimonio(politico.id, bem):
+                resumo["patrimonios_novos"] += 1
+        for pr in item.get("projetos") or []:
+            obj = projetos_por_chave.get(pr.get("chave") or f"{pr.get('casa')}-{pr.get('numero')}-{pr.get('ano')}")
+            if obj:
+                for coautor in pr.get("coautorias") or []:
+                    coautor_slug = coautor.get("slug")
+                    coautor_politico = db.session.scalar(select(Politico).where(Politico.slug == coautor_slug)) if coautor_slug else None
+                    if coautor_politico is None:
+                        raise ErroValidacao("parametro_invalido", "Coautoria referencia político inexistente.")
+                    if _upsert_coautoria(obj, coautor_politico.id, coautor):
+                        resumo["coautorias_novas"] += 1
         for n in item.get("noticias") or []:
             if _upsert_noticia(politico, n, veiculo):
                 resumo["noticias_novas"] += 1

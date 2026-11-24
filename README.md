@@ -46,12 +46,13 @@ Esse comando preserva o volume do PostgreSQL. **`docker compose down -v` apaga o
 - Colinha eleitoral privada armazenada apenas no `localStorage` do navegador.
 - Importação idempotente de pacotes JSON de demonstração ou oficiais.
 - Consulta dos dados importados da Câmara dos Deputados. A carga é manual e está descrita em `docs/CAMARA.md`.
+- Importação oficial dos resultados eleitorais do TSE para candidatos eleitos em 2022 e 2024, com ano e situação eleitoral. Consulte `docs/TSE.md`.
 
-O conjunto importado por padrão é fictício e está identificado como demonstração. A importação oficial exige nome e URL HTTP(S) da fonte por registro. Não há sincronização eleitoral oficial automática.
+O conjunto importado por padrão é fictício e está identificado como demonstração. A carga oficial do TSE é manual; não é executada automaticamente na inicialização.
 
 ## Funcionalidades pendentes / limitações
 
-- Os modelos de candidaturas e outras entidades eleitorais em `backend/app/models/` não estão ligados a migrações, serviços ou rotas; não fazem parte da API ativa.
+- A importação do TSE cobre resultados de eleições de 2022 e 2024; outros anos não são inferidos.
 - Remuneração, patrimônio declarado, propostas de campanha e votação/filiação eleitoral não têm fluxos completos disponíveis na interface.
 - Coleta de notícias não é agendada; execute-a manualmente. A Agência Brasil é a única fonte autorizada implementada; outras fontes permanecem bloqueadas até verificação de licença.
 - Projetos aceitam apenas um político vinculado; coautoria ainda não é suportada.

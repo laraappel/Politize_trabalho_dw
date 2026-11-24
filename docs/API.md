@@ -22,6 +22,9 @@ Base local no navegador: `http://localhost:5001/api`. O frontend usa `VITE_API_U
 | `GET /politicos/<id>/projetos` | Projetos paginados. |
 | `GET /politicos/<id>/votacoes` | Votações paginadas. |
 | `GET /politicos/<id>/despesas` | Despesas paginadas; aceita `categoria`, `de`, `ate`. |
+| `GET /politicos/<id>/candidaturas` | Histórico eleitoral paginado, com ano da eleição, cargo, situação e fonte. |
+| `GET /cargos-eletivos` | Cargos eletivos; filtros `q`, `cargo`, `esfera`, `uf`, `municipio`, `situacao`, `ano`, `page`, `per_page`. |
+| `GET /cargos-eletivos/filtros` | Opções disponíveis de cargo, esfera, UF, município, partido, ano e situação. |
 | `GET /transparencia` | Contagens e resumo agregado do cadastro ativo. |
 | `GET /transparencia/despesas` | Lista paginada; filtros `categoria`, `uf`, `de`, `ate`. |
 | `GET /transparencia/filtros` | Opções `categorias` e `ufs`. |
@@ -52,6 +55,6 @@ docker compose exec backend flask --app wsgi importar-dados --arquivo /database/
 
 O formato e as regras estão em [database/README.md](../database/README.md). O pacote é idempotente para as chaves naturais existentes. Projetos com o mesmo identificador em mais de um político são rejeitados até que a coautoria seja implementada.
 
-## Rotas não disponíveis
+## Integração TSE
 
-O cadastro de candidaturas e outras classes eleitorais em arquivos de modelo ainda não tem migrações nem rotas registradas. Não são parte deste contrato.
+Resultados oficiais importados apresentam o ano da eleição e a situação de totalização publicada pelo TSE. A carga é manual e descrita em [docs/TSE.md](TSE.md); os resultados não são inferidos a partir do mandato atual.

@@ -1,4 +1,3 @@
-
 """Consultas públicas aos dados normalizados importados da Câmara."""
 from flask import Blueprint, jsonify, request
 from sqlalchemy import or_, select
@@ -105,11 +104,18 @@ def listar_deputados():
     consulta = select(PoliticoRef).where(PoliticoRef.id_camara.is_not(None))
     uf = request.args.get("uf")
     partido = request.args.get("partido")
+    q = request.args.get("q")
 
     if uf:
         consulta = consulta.where(PoliticoRef.uf == uf.upper())
     if partido:
         consulta = consulta.where(PoliticoRef.partido == partido.upper())
+    if q:
+        padrao = f"%{q.strip().replace('%', r'\\%').replace('_', r'\\_')}%"
+        consulta = consulta.where(or_(
+            PoliticoRef.nome_completo.ilike(padrao, escape="\\"),
+            PoliticoRef.nome_urna.ilike(padrao, escape="\\"),
+        ))
 
     total = db.session.scalar(
         select(db.func.count()).select_from(consulta.subquery())
@@ -323,6 +329,7 @@ def listar_proposicoes():
             "origem": p.origem,
             "coletado_em": _iso(p.coletado_em),
             "atualizado_em": _iso(p.atualizado_em),
+            "autores": p.autores_camara or [],
         } for p in registros],
         "paginacao": {
             "pagina": pagina,

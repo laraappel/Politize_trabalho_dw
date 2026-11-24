@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { listarPoliticos, obterFiltrosPoliticos } from "../api/politicos";
-import SeloDemonstracao from "../components/SeloDemonstracao";
-import DadoAusente from "../components/DadoAusente";
+import { listarDeputadosCamara, listarPartidosCamara } from "../api/camara";
+import { listarCargosEletivos, obterFiltrosCargosEletivos } from "../api/cargos";
 
 const PER_PAGE = 10;
-const CHAVES = ["q", "cargo", "partido", "uf"];
+const CHAVES = ["q", "cargo", "partido", "uf", "ano"];
 
 function PoliticosPage() {
   const [params, setParams] = useSearchParams();
-  const [opcoes, setOpcoes] = useState({ cargos: [], partidos: [], ufs: [] });
+  const [opcoes, setOpcoes] = useState({ cargos: [], partidos: [], ufs: [], anos: [] });
   const [erroFiltros, setErroFiltros] = useState("");
   const [resultado, setResultado] = useState({ status: "loading" });
 
@@ -18,20 +17,85 @@ function PoliticosPage() {
   const consulta = JSON.stringify([filtros, page]);
 
   useEffect(() => {
-    obterFiltrosPoliticos()
-      .then(setOpcoes)
+    Promise.all([
+      listarPartidosCamara(),
+      listarDeputadosCamara({ pagina: 1, limite: 100 }),
+      obterFiltrosCargosEletivos(),
+    ])
+      .then(([partidos, deputados, cargos]) => setOpcoes({
+        cargos: ["Deputado federal", ...(cargos.cargos || [])].filter((cargo, indice, lista) => lista.indexOf(cargo) === indice),
+        anos: cargos.anos || [],
+        partidos: [...new Set([
+          ...(partidos.dados || []).map((partido) => partido.sigla),
+          ...(cargos.partidos || []),
+        ].filter(Boolean))].sort(),
+        ufs: [...new Set([
+          ...(deputados.dados || []).map((deputado) => deputado.uf),
+          ...(cargos.ufs || []),
+        ].filter(Boolean))].sort(),
+      }))
       .catch((erro) => setErroFiltros(erro.message));
   }, []);
 
   useEffect(() => {
     let ativo = true;
     setResultado((anterior) => ({ ...anterior, status: "loading" }));
-    listarPoliticos({ ...filtros, page, per_page: PER_PAGE })
-      .then((data) => ativo && setResultado({ status: "ready", data }))
-      .catch((erro) => ativo && setResultado({ status: "error", mensagem: erro.message }));
-    return () => {
-      ativo = false;
-    };
+
+    if ((filtros.cargo && filtros.cargo.toLowerCase() !== "deputado federal") || filtros.ano) {
+      listarCargosEletivos({ q: filtros.q, partido: filtros.partido, uf: filtros.uf, cargo: filtros.cargo, ano: filtros.ano, page, per_page: PER_PAGE })
+        .then((response) => {
+          if (!ativo) return;
+          setResultado({
+            status: "ready",
+            data: {
+              items: (response.items || []).map((item) => ({
+                id: item.politico_id,
+                nome_exibicao: item.nome,
+                cargo: item.cargo,
+                partido: item.partido,
+                uf: item.uf,
+                demonstracao: false,
+                atualizado_em: item.atualizado_em,
+                ano_eleicao: item.ano_eleicao,
+                situacao_eleitoral: item.situacao,
+              })),
+              total: response.total || 0,
+              page: response.page || page,
+              per_page: response.per_page || PER_PAGE,
+              pages: response.pages || 0,
+            },
+          });
+        })
+        .catch((erro) => ativo && setResultado({ status: "error", mensagem: erro.message }));
+    } else {
+      listarDeputadosCamara({ q: filtros.q, partido: filtros.partido, uf: filtros.uf, pagina: page, limite: PER_PAGE })
+        .then((response) => {
+          if (!ativo) return;
+          const paginacao = response.paginacao || {};
+          setResultado({
+            status: "ready",
+            data: {
+              items: (response.dados || []).map((p) => ({
+                id: p.id,
+                nome_exibicao: p.nome,
+                cargo: p.cargo,
+                partido: p.partido,
+                uf: p.uf,
+                demonstracao: false,
+                atualizado_em: p.atualizado_em,
+                id_camara: p.id_camara,
+              })),
+              total: paginacao.total || 0,
+              page: paginacao.pagina || page,
+              per_page: paginacao.limite || PER_PAGE,
+              pages: paginacao.limite ? Math.ceil((paginacao.total || 0) / paginacao.limite) : 0,
+            },
+          });
+        })
+        .catch((erro) => ativo && setResultado({ status: "error", mensagem: erro.message }));
+    }
+
+    return () => { ativo = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [consulta]);
 
@@ -52,8 +116,9 @@ function PoliticosPage() {
         <p className="eyebrow">Políticos</p>
         <h1>Pesquisa de políticos</h1>
         <p className="lede">
-          Busque por nome, cargo, partido e unidade da federação. Registros marcados como
-          demonstração são fictícios.
+          Consulte cargos eletivos com dados oficiais disponíveis: deputados federais pela Câmara
+          dos Deputados, senadores pelo Senado Federal e resultados eleitorais do TSE para cargos federais,
+          estaduais e municipais.
         </p>
       </header>
 
@@ -96,6 +161,15 @@ function PoliticosPage() {
             ))}
           </select>
         </label>
+        <label>
+          Ano da eleição
+          <select value={filtros.ano} onChange={aoMudar("ano")}>
+            <option value="">Todos</option>
+            {opcoes.anos.map((ano) => (
+              <option key={ano} value={ano}>{ano}</option>
+            ))}
+          </select>
+        </label>
         {temFiltro && (
           <button type="button" className="button button-secondary" onClick={() => setParams({})}>
             Limpar filtros
@@ -118,7 +192,7 @@ function PoliticosPage() {
         <p className="notice">
           {temFiltro
             ? "Nenhum político corresponde aos filtros escolhidos."
-            : "Ainda não há políticos cadastrados. Importe o conjunto de demonstração ou uma fonte oficial."}
+            : "Ainda não há políticos cadastrados."}
         </p>
       )}
 
@@ -129,15 +203,13 @@ function PoliticosPage() {
               <div>
                 <h2>
                   <Link to={`/politicos/${p.id}`}>{p.nome_exibicao}</Link>
-                  <SeloDemonstracao visivel={p.demonstracao} />
                 </h2>
                 <p>
-                  {p.cargo || <DadoAusente texto="Cargo não informado" />}
-                  {" · "}
-                  {p.partido || <DadoAusente texto="Partido não informado" />}
-                  {" · "}
-                  {p.uf || <DadoAusente texto="UF não informada" />}
+                  {[p.cargo, p.partido, p.uf].filter(Boolean).join(" · ")}
                 </p>
+                {p.ano_eleicao && (
+                  <p>Eleição {p.ano_eleicao}{p.situacao_eleitoral ? ` · ${p.situacao_eleitoral}` : ""}</p>
+                )}
               </div>
               <Link className="button button-secondary" to={`/politicos/${p.id}`}>
                 Ver perfil

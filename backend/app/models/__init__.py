@@ -23,3 +23,12 @@ from app.models.camara import (  # noqa: F401
 )
 
 from app.models.politico import Politico  # noqa: F401
+from app.models.dominios_eleitorais_transparencia import (  # noqa: F401
+    Candidatura,
+    PatrimonioDeclarado,
+    ProjetoCoautoria,
+    PropostaCampanha,
+    Remuneracao,
+)
+
+from app.models.cargo_eletivo import CargoEletivo  # noqa: F401

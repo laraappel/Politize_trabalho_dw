@@ -213,3 +213,39 @@ def register_cli(app):
 
         if resumo.get("aviso"):
             click.echo(resumo["aviso"])
+
+    @app.cli.command("sincronizar-senado")
+    def sincronizar_senado():
+        """Importa senadores em exercício pela API oficial do Senado Federal."""
+        from app.services.senado import sincronizar_senadores
+
+        resultado = sincronizar_senadores()
+        click.echo(
+            f"senadores lidos={resultado['lidos']} "
+            f"novos={resultado['novos']} atualizados={resultado['atualizados']}"
+        )
+
+    @app.cli.command("sincronizar-tse")
+    @click.option(
+        "--anos",
+        default="2022,2024",
+        show_default=True,
+        help="Anos eleitorais separados por vírgula (suportados: 2022, 2024).",
+    )
+    def sincronizar_tse(anos):
+        """Importa os candidatos eleitos dos arquivos oficiais do TSE."""
+        from app.services.tse import sincronizar_tse as importar_tse
+
+        try:
+            lista_anos = [int(ano.strip()) for ano in anos.split(",") if ano.strip()]
+            if not lista_anos:
+                raise ValueError("Informe ao menos um ano eleitoral.")
+            resultado = importar_tse(lista_anos)
+            click.echo(
+                f"TSE: linhas lidas={resultado['lidos']} "
+                f"candidaturas eleitas importadas={resultado['eleitos']}"
+            )
+            for ano in resultado["anos"]:
+                click.echo(f"{ano['ano']}: lidos={ano['lidos']} eleitos={ano['eleitos']}")
+        except Exception as exc:
+            raise click.ClickException(f"Importação do TSE falhou: {exc}") from exc

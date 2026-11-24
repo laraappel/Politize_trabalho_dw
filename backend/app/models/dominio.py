@@ -45,6 +45,7 @@ class Projeto(db.Model):
 
     politico = db.relationship("Politico", back_populates="projetos")
     votacoes = db.relationship("Votacao", back_populates="projeto")
+    coautorias = db.relationship("ProjetoCoautoria", back_populates="projeto", cascade="all, delete-orphan")
 
 
 class Votacao(db.Model):

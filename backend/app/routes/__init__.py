@@ -5,6 +5,8 @@ from app.routes.health import health_bp
 from app.routes.noticias import noticias_bp
 from app.routes.politicos import politicos_bp
 from app.routes.transparencia import transparencia_bp
+from app.routes.dominios_eleitorais import eleitorais_bp
+from app.routes.cargos_eletivos import cargos_eletivos_bp
 
 
 def register_blueprints(app):
@@ -13,3 +15,5 @@ def register_blueprints(app):
     app.register_blueprint(transparencia_bp, url_prefix="/api")
     app.register_blueprint(noticias_bp, url_prefix="/api")
     app.register_blueprint(camara_bp, url_prefix="/api")
+    app.register_blueprint(eleitorais_bp, url_prefix="/api")
+    app.register_blueprint(cargos_eletivos_bp, url_prefix="/api")

@@ -1,4 +1,3 @@
-
 """Modelos normalizados recebidos da Câmara. Tabelas em 003_camara.sql."""
 
 from app.extensions import db
@@ -179,6 +178,7 @@ class ProposicaoCamara(db.Model):
         server_default=db.func.now(),
     )
     dados_origem = db.Column(JSONB)
+    autores_camara = db.Column(JSONB)
 
 
 class DataSyncLog(db.Model):

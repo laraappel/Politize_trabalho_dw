@@ -1,4 +1,3 @@
-
 """Importação idempotente dos dados públicos da Câmara para o PostgreSQL."""
 
 import hashlib
@@ -635,6 +634,10 @@ class CamaraSyncService:
 
                     lidos += 1
 
+                    autores = self.client.get_opcional(
+                        f"proposicoes/{int(id_prop)}/autores"
+                    ).get("dados") or []
+
                     prop = db.session.execute(
                         select(ProposicaoCamara).where(
                             ProposicaoCamara.id_proposicao_camara
@@ -665,6 +668,7 @@ class CamaraSyncService:
                         ),
                         "origem": FONTE,
                         "dados_origem": item,
+                        "autores_camara": autores,
                     }
 
                     if prop is None:

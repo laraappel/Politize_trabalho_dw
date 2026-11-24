@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { obterPolitico } from "../api/politicos";
@@ -15,11 +14,15 @@ import {
   formatarDinheiro,
   rotuloVoto,
 } from "../formatters";
+import { obterDeputadoCamara, listarDespesasDeputadoCamara, listarProposicoesCamara } from "../api/camara";
+import { listarCandidaturasPolitico } from "../api/cargos";
 
 function PoliticoPerfilPage() {
   const { id } = useParams();
 
   const [estado, setEstado] = useState({ status: "loading" });
+  const [camara, setCamara] = useState(null);
+  const [candidaturas, setCandidaturas] = useState([]);
   const [naColinha, setNaColinha] = useState(false);
 
   useEffect(() => {
@@ -33,6 +36,15 @@ function PoliticoPerfilPage() {
 
         setEstado({ status: "ready", data });
         setNaColinha(estaNaColinha(data.id));
+        listarCandidaturasPolitico(data.id, { per_page: 50 })
+          .then((response) => ativo && setCandidaturas(response.items || []))
+          .catch(() => ativo && setCandidaturas([]));
+
+        if (data.id_camara) {
+          obterDeputadoCamara(data.id_camara)
+            .then((response) => ativo && setCamara(response.dados))
+            .catch(() => ativo && setCamara(null));
+        }
       })
       .catch((erro) => {
         if (!ativo) return;
@@ -163,6 +175,25 @@ function PoliticoPerfilPage() {
           </Link>
         </div>
       </header>
+
+      <section>
+        <h2>Histórico eleitoral</h2>
+        {candidaturas.length === 0 ? (
+          <p>Não há candidaturas eleitorais oficiais importadas para este perfil.</p>
+        ) : (
+          <ul className="lista-simples">
+            {candidaturas.map((c) => (
+              <li key={c.id}>
+                <strong>{c.cargo} — eleição {c.ano}</strong>
+                <p>Situação eleitoral: {c.resultado || "Não informada"}</p>
+                <p>Localidade: {[c.municipio, c.uf].filter(Boolean).join(" - ") || "Não informada"}</p>
+                <p>Partido: {c.partido_sigla || c.partido?.sigla || "Não informado"}</p>
+                <Fonte registro={c} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       {/* MANDATOS */}
       <section>
